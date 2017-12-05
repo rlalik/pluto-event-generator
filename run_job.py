@@ -21,7 +21,7 @@ parser=argparse.ArgumentParser(description='Submit dst analysis to GSI batch far
 parser.add_argument('arguments', help='list of arguments',type=str)
 parser.add_argument('-p', '--part', help='partition', type=str, default="main")
 parser.add_argument('-f', '--file', help='input is single file', action='store_true', default=True)
-parser.add_argument('-e', '--events', help='number of events per file to be processed',type=int, default=0)
+parser.add_argument('-e', '--events', help='number of events per file to be processed',type=int, default=10000)
 parser.add_argument('-t', '--time', help='time need to finish task', default=def_time, type=int)
 parser.add_argument('-m', '--mem', help='requested memory', default=def_mem, type=str)
 parser.add_argument('-s', '--script', help='execute script', default=def_script)
@@ -64,10 +64,7 @@ if __name__=="__main__":
             print '{0:8d} ({1:6.2f}%)'.format(i,perc)
 
         logfile = submissiondir + '/log/slurm-%j.log'
-
-        events = 1000000
-        if args.events > 0:
-            events = args.events
+        events = args.events
 
         print 'submitting file: ',entry
 

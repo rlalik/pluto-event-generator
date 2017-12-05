@@ -16,8 +16,8 @@ var3=$(echo $STR | cut -f3 -d:)
 
 root -b -q
 
-cd /lustre/nyx/hades/user/rlalik/hades/pp35/sim/pluto
+cd /lustre/nyx/hades/user/rlalik/hades/pp35/sim/pluto_gen
 
 date
 
-time PlutoGen $pattern -e $events -f $offset -l $loops -s $seed -o output
+time /lustre/nyx/hades/user/rlalik/hades/pp35/sim/pluto_gen/PlutoGen $pattern -e $events -f $offset -l $loops -s $seed -o output

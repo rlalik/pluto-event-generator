@@ -1,6 +1,6 @@
 APP_NAME     := PlutoGen
 SOURCE_FILES := PlutoGen.cc
-INSTALL_DIR  := $(MYHADDIR)/bin
+#INSTALL_DIR  := $(MYHADDIR)/bin
 
 USES_RFIO    := no
 USES_CERNLIB := no
