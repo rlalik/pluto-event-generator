@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
     Float_t Eb = 3.5;         // beam energy in AGeV
 
     std::string par_database = "ChannelsDatabase.txt";
-    std::string par_output = "output";
+    std::string par_output = "";
 
     struct option long_options[] =
     {
@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
     int pid_resonance = 0;
     int decay_index = 0;
 
-    //#define NSTARS 1
+//#define NSTARS 1
 #define LOOP_DEF 1
 
 #ifdef NSTARS
@@ -378,19 +378,19 @@ int main(int argc, char **argv) {
   .05000      9008018 "Lambda(1520)0 --> Lambda + pi+ + pi-"
   .05000      7007018 "Lambda(1520)0 --> Lambda + pi0 + pi0"
 */
-    for (int l = par_loop_offset; l < par_loops; ++l)
+    for (int l = par_loop_offset; l < par_loop_offset+par_loops; ++l)
     {
         PUtils::SetSeed(l+par_seed);
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        std::stringstream ss;
-        ss << par_output;
-        //         if (par_loops > 1)
-        {
-            ss << "_part" << std::setw(3) << std::setfill('0') << l;
-        }
-        std::string tmpname = ss.str();
+        char buff[200];
+        if (par_output.length())
+            sprintf(buff, "%s/pluto_chan_%03d_seed_%03d", par_output.c_str(), channel, l+par_seed);
+        else
+            sprintf(buff, "pluto_chan_%03d_seed_%03d", channel, l+par_seed);
+
+        std::string tmpname = buff;
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         //Some Particles for the reaction
@@ -405,7 +405,6 @@ int main(int argc, char **argv) {
         for (int i = 0; i < size; ++i)
         {
             channels[i] = new PParticle(tokens[i].c_str());
-            PR(tokens[i].c_str());
         }
 
         PDecayManager *p_p = new PDecayManager;
@@ -448,7 +447,6 @@ int main(int argc, char **argv) {
                 0,
                 const_cast<char *>(tmpname.c_str()), 0, 0, 0, 1, 1
                 );
-
 #else
 
         char str_en[20];
@@ -462,8 +460,6 @@ int main(int argc, char **argv) {
         my_reaction.loop(par_events);
 #endif
     }
-
-
 
     return 0;
 }
