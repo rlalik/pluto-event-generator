@@ -1,13 +1,17 @@
 #!/bin/bash
 
 . /cvmfs/hades.gsi.de/install/5.34.34/hydra2-4.9m/defall.sh
-. /cvmfs/hades.gsi.de/install/root-5.34.01/bin/thisroot.sh 
+. /cvmfs/hades.gsi.de/install/root-5.34.34/bin/thisroot.sh 
 
-export HADDIR=/u/rlalik/hydra/install/hydra2-fwdet
-export CERN_ROOT=/cvmfs/hades.gsi.de/install/cernlib_gfortran/2005/
-export HGEANT_DIR=/u/rlalik/hydra/install/hgeant2-fwdet/
+export HADDIR=/lustre/nyx/hades/user/rlalik/fwdet/install/hydra2-fwdet
+export HGEANT_DIR=/lustre/nyx/hades/user/rlalik/fwdet/install/hgeant2-fwdet
+
+export PLUTODIR=/cvmfs/hades.gsi.de/install/5.34.34/pluto/v5_44/
 
 export LC_ALL=C
 export ROOTLOGON=$HADDIR/macros/rootlogon.C
 
 export MYHADDIR=/lustre/nyx/hades/user/${USER}/hades/pp35/install
+
+export PATH=${MYHADDIR}/bin:${PATH}
+export LD_LIBRARY_PATH=${MYHADDIR}/lib:${PLUTODIR}:${LD_LIBRARY_PATH}

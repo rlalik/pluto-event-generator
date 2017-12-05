@@ -57,7 +57,7 @@ Installing Pluto Generator
 Clone this repository in your home in the gsi conenction
 
     cd hades/pp35/sim/
-    git clone https://github.com/hadesuj/pluto_gen ./
+    git clone https://github.com/hadesuj/pluto_gen pluto_gen
     cd pluto_gen
 
 You must have a profile script. If not yet, you can use an example from this repository (skip this if your profile exists).

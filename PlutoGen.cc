@@ -115,7 +115,7 @@ static inline std::string & clear_chars(std::string &str, char s)
 int main(int argc, char **argv) {
     int verbose_flag = 0;
     int par_random_seed = 0;
-    int par_events = 1000000;
+    int par_events = 10000;
     int par_loops = 1;
     int par_loop_offset = 0;
     int par_scale = 0;
@@ -130,14 +130,14 @@ int main(int argc, char **argv) {
         {"verbose",     no_argument,        &verbose_flag,    1},
         {"brief",       no_argument,        &verbose_flag,    0},
         {"random-seed", no_argument,        &par_random_seed, 1},
-        {"energy",        required_argument,  0,                'E'},
+        {"energy",      required_argument,  0,                'E'},
         {"database",    required_argument,  0,                'd'},
         {"events",      required_argument,  0,                'e'},
         {"loops",       required_argument,  0,                'l'},
         {"offset",      required_argument,  0,                'f'},
         {"output",      required_argument,  0,                'o'},
-        {"scale",       required_argument,  0,                's'},
-        {"seed",        required_argument,  0,                't'},
+        {"scale",       required_argument,  0,                'x'},
+        {"seed",        required_argument,  0,                's'},
         {"help",        no_argument,        0,                'h'},
         { 0, 0, 0, 0 }
     };
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
     while (1) {
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "hd:e:f:l:o:s:t:", long_options, &option_index);
+        c = getopt_long(argc, argv, "E:hd:e:f:l:o:x:s:", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -179,10 +179,10 @@ int main(int argc, char **argv) {
             case 'o':
                 par_output = optarg;
                 break;
-            case 's':
+            case 'x':
                 par_scale = atoi(optarg);
                 break;
-            case 't':
+            case 's':
                 par_seed = atoi(optarg);
                 break;
             case 'h':
