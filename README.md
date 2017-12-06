@@ -1,26 +1,19 @@
 PlutoGen is a program which generates Pluto events based on the database information.
 PlutoGen is not Pluto, it uses Pluto, so don't be confused.
 
-About GSI and work organization
-===============================
-
-A few words about computer system in GSI. There are three systems: GSI machines, Kronos machines (interface for HPC farm) and the HPC farm itself (you have no direct access there). And there are two storage systems: home and luster. GSI and Kronos have access to home, Kronos and Lustre have access to lustre, GSI has no access to lustre and HPC has no access to home. Only GSI and Kronos have access to the internet.
-
-Home is a place where you should store your simulation and analysis code (you can access it from GSI and Cronos) but you should install all executables and sim/data on lustre (that kronos and HPC have access there).
-
 Installing PlutoGen Generator
 =============================
 
-Go to your lustre directory (see *Tips* section for details). Create sim directory and enter it:
+Go to your lustre directory (see *manuals:Tips* repo for details). Create sim directory and enter it:
     mkdir hades/pp45/sim -p
     cd hades/pp45/sim/
 
 Clone the repository:
 
-    git clone https://github.com/hadesuj/pluto_gen pluto_gen
+    git clone https://github.com/HADES-Cracovia/pluto_gen pluto_gen
     cd pluto_gen
 
-Source your profile (see Tips section if you don't have profile yet), e.g. `. ../../profile/.sh` and install pluto generator.
+Source your profile (see *manuals:Tips* repo if you don't have profile yet), e.g. `. ../../profile/.sh` and install pluto generator.
 
     make
     make install
@@ -61,7 +54,7 @@ Program is executed `Plutogen [options] id` where options are:
 
 The outpt file is `pluto_chan_#1_seed_#1.*` as described above.
 
-Using Batch Farm
+Using with a Batch Farm
 ----------------
 
 It is possible to send jobs to the GSI batch farm. For that, two additional files `job_script.sh` and `run_job.py` are provided.
@@ -80,95 +73,3 @@ where `events` are optional (default: 10000) ang `args` can be multiple entries 
 If you wish to change the energy, please edit line #12 of `job_script.sh`.
 
 Don't forget to create `log` directory if using the farm.
-
-Tips
-====
-
-Prepare ssh
------------
-
-In your `~/.ssh/config`
-
-    Host                        gsi
-        Hostname                lx-pool.gsi.de
-        Port                    22
-        User                    your_user_name
-        ForwardAgent            yes
-        ForwardX11Trusted       yes
-        TCPKeepAlive            yes
-    
-    Host                        kro
-        User                    your_user_name
-        ProxyCommand            ssh -q gsi -W kronos.hpc.gsi.de:%p
-
-Replace `your_user_name` with your GSI user name.
-
-Now you can connect to GSI machine using `ssh gsi -Y` or to farm machines using `ssh kro -Y`. Always use `-Y` parameter i ncase you will need X server.
-
-
-Prepare environment
---------------------
-
-Go to kronos computer `ssh kro -Y`
-
-Create hades work dir
-
-    mkdir ~/hades/pp45
-    cd hades/pp45
-
-(for proton+proton 3.5 GeV, for different energies you can create different names).
-
-Make some subdirs for more organization.
-
-    mkdir sim
-
-Go to lustre (see Tips on the end of this file). On lustre make:
-
-    mkdir hades/pp45 -p
-
-Prepare profile
----------------
-
-You must have a profile script. If not yet, you can use an example from this repository
-
-    cp profile.sh.example ../../profile.sh
-
-and edit the file woth your favorite editor to adjust `HADDIR` (if using custom hydra) and `HGEANT_DIR` variables.
-
-Quick lustre access
--------------------
-
-in your `~/.bash.rc` add these lines to easy access lustre
-
-    function lustre {
-        cd /lustre/nyx/hades/user/${USER}
-    }
-
-Then is enough to type `lustre` in your cmd to go there, to get back home type `cd`.
-
-You must reload your profile to apply these changes, execute
-
-    . ~/.bash.rc
-
-Working with git
-----------------
-
-To clone repository
-
-    git clone address destination
-
-After you made changes, commit them to the repository
-
-    git commit -m "Message text" -a
-
-If you use switch `-a` then all changes are commited, if you wanna commit only selected files, put file names instead of `-a`.
-
-    git push
-
-will push the data to remote repository.
-
-If you want to fetch recent changes from the repository
-
-    git pull
-
-All these actions you must do inside the repository directory: the `destination` parameter of the clone directory.
