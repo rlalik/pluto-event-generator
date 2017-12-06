@@ -11,7 +11,7 @@ export PLUTODIR=/cvmfs/hades.gsi.de/install/5.34.34/pluto/v5_44/
 export LC_ALL=C
 export ROOTLOGON=$HADDIR/macros/rootlogon.C
 
-export MYHADDIR=/lustre/nyx/hades/user/${USER}/hades/pp35/install
+export MYHADDIR=/lustre/nyx/hades/user/${USER}/hades/pp45/install
 
 export PATH=${MYHADDIR}/bin:${PATH}
 export LD_LIBRARY_PATH=${MYHADDIR}/lib:${PLUTODIR}:${LD_LIBRARY_PATH}

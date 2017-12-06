@@ -26,13 +26,9 @@ parser.add_argument('-t', '--time', help='time need to finish task', default=def
 parser.add_argument('-m', '--mem', help='requested memory', default=def_mem, type=str)
 parser.add_argument('-s', '--script', help='execute script', default=def_script)
 parser.add_argument('-d', '--dir', help='working directory', default=def_dir)
-parser.add_argument('-n', '--files',help='number of files you want to proceed, if not specified all files in folder will be executed',type=int,default=-100)
 args=parser.parse_args()
 
 print args
-
-NEVENTS=args.events
-NFILES = args.files
 
 submissiondir=os.getcwd()+'/'
 tpl_resources='--time={0:1d}:{1:02d}:00 --mem-per-cpu={2:s} -p main'
@@ -54,14 +50,6 @@ if __name__=="__main__":
     for entry in lines:
         entry = entry.strip()
         print entry
-        i+=1
-        if NFILES!=-100: 
-            perc=float(i)/NFILES * 100
-        else:
-            perc=float(i)/len(lines) * 100
-
-        if i%1000 == 0 or i==1:
-            print '{0:8d} ({1:6.2f}%)'.format(i,perc)
 
         logfile = submissiondir + '/log/slurm-%j.log'
         events = args.events
@@ -91,9 +79,6 @@ if __name__=="__main__":
             qsub_command='sbatch ' + command
             print qsub_command
             os.system(qsub_command)
-
-        if NFILES==i:
-            break
 
     print i, ' entries submitted'
     print 'last submitted entry: ',entry

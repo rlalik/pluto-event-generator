@@ -12,8 +12,8 @@ Installing PlutoGen Generator
 =============================
 
 Go to your lustre directory (see *Tips* section for details). Create sim directory and enter it:
-    mkdir hades/pp35/sim -p
-    cd hades/pp35/sim/
+    mkdir hades/pp45/sim -p
+    cd hades/pp45/sim/
 
 Clone the repository:
 
@@ -79,6 +79,8 @@ where `events` are optional (default: 10000) ang `args` can be multiple entries 
 
 If you wish to change the energy, please edit line #12 of `job_script.sh`.
 
+Don't forget to create `log` directory if using the farm.
+
 Tips
 ====
 
@@ -111,8 +113,8 @@ Go to kronos computer `ssh kro -Y`
 
 Create hades work dir
 
-    mkdir ~/hades/pp35
-    cd hades/pp35
+    mkdir ~/hades/pp45
+    cd hades/pp45
 
 (for proton+proton 3.5 GeV, for different energies you can create different names).
 
@@ -122,7 +124,7 @@ Make some subdirs for more organization.
 
 Go to lustre (see Tips on the end of this file). On lustre make:
 
-    mkdir hades/pp35 -p
+    mkdir hades/pp45 -p
 
 Prepare profile
 ---------------

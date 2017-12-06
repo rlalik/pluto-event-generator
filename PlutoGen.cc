@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
     std::string particles;
     std::string comment;
 
-    std::ifstream ofs(par_database.c_str(), std::ios::out);
+    std::ifstream ofs(par_database.c_str(), std::ios::in);
 
     bool has_data = false;
 
@@ -386,9 +386,9 @@ int main(int argc, char **argv) {
 
         char buff[200];
         if (par_output.length())
-            sprintf(buff, "%s/pluto_chan_%03d_seed_%03d", par_output.c_str(), channel, l+par_seed);
+            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%03d", par_output.c_str(), channel, par_events, l+par_seed);
         else
-            sprintf(buff, "pluto_chan_%03d_seed_%03d", channel, l+par_seed);
+            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%03d", channel, par_events, l+par_seed);
 
         std::string tmpname = buff;
 
