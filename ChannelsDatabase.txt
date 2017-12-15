@@ -5,71 +5,31 @@
 @  Crosssection  - ignore, set to 1.0
 @  Reaction      - channel reaction
 @
-@Ch	Width	Crossection	Reaction
-@
-40	1.0	0.0480451	Lambda,K+,p			? cross section
-44	1.0	0.010		Lambda1405,K+,p
-@45	1.0	0.0416911	Sigma+,K+,n
-@52	1.0	0.00132		K+,K-,p,p
-55	1.0	0.0276463	Lambda,p,pi+,K0S
-@57	1.0	0.0239695	
-58	1.0	0.0239446	Lambda,K+,pi+,n
-60	1.0	0.020175	Sigma0,K+,p	// Sigma-,K+,p,pi+
-61	1.0	0.018915	Lambda,K+,p,pi0	//Sigma+,K+,p,pi-
-66	1.0	0.0123809	Sigma0,p,pi+,K0S	//Sigma+,K+,n,pi+,pi-
-@67	1.0	0.0113212	n,K+,p,K0S
-68	1.0	0.0103284	Lambda,D++,K0S
-@69	1.0	0.00927646	Sigma-,K+,p,pi+,pi0
-@70	1.0	0.00851732	Sigma+,K+,p,pi-,pi0
-@71	1.0	0.00757802	
-72	1.0	0.0078		Sigma1385+,K+,n			? cross section
-@73	1.0	0.0073353	
-@74	1.0	0.00649418	
-77	1.0	0.00531218	Sigma1385+,p,K0S		? cross section
-@79	1.0	0.00526669	Sigma-,K+,n,pi+,pi+
-80	1.0	0.00524109	Sigma0,K+,p,pi+,pi-	//K+,p,p,pi-,K0S
-81	1.0	0.00508021	Lambda,n,pi+,pi+,K0S	//Lambda1520,K+,p
-82	1.0	0.00503324	Lambda,K+,p,pi+,pi-,pi0	//Sigma0,K+,p,pi0
-@84	1.0	0.00453141	
-85	1.0	0.00446203	Lambda,p,pi+,pi0,K0S	//Sigma+,p,K0S
-@86	1.0	0.00406263	
-@87	1.0	0.00375049	
-88	1.0	0.0088		Sigma13850,K+,p		//p,p,pi0,K0S,K0S			? cross section
-89	1.0	0.00296014	Lambda,K+,n,pi-,pi+,pi+
-90	1.0	0.00263867	Lambda,K+,p,pi-,pi+
-@92	1.0	0.00225889	Sigma+,n,pi+,K0S
-@93	1.0	0.00202397	
-@95	1.0	0.00193032	Sigma+,p,pi0,K0S
-@98	1.0	0.00176164	Sigma-,p,pi+,pi+,K0S
-100	1.0	0.00132376	Lambda,p,pi+,pi+,pi-,K0S	//p,p,phi
-102	1.0	0.00112839	Lambda,p,pi+,pi+,pi0,pi-,K0S	//p,p,K0S,K0S
-@103	1.0	0.00102256	p,n,K+,K0*896
-106	1.0	0.000372088	Lambda,n,pi+,pi+,pi+,pi-,K0S	//p,p,K0S,K0*896
-111	1.0	0.01		Lambda15200,p,K+		//+Sigma+,p,pi+,pi-,K0S
-@112	1.0	0		p,p,pi+,K0S,K-
-@301	1.0	0.00102256	p,pi+,Lambda,K0*896
-@302	1.0	0.00102256	
-@303	1.0	0.00102256	
-@304	1.0	0.00102256
-400	1.0	0.00000001	Sigma0,D++,K0S
-401	1.0	0.00000001	Lambda,D+,K+
-402	1.0	0.00000001	Sigma0,D+,K+
-410	1.0	0.00000001	Sigma0,n,pi+,K+
-411	1.0	0.00366 	Sigma0,p,pi0,K+
-@420 1.0 0.00000001  Lambda1520,p,K+	// old, check 111
-420 1.0 1.0 D++,Lambda1405,K0S
-421 1.0 1.0 D++,Sigma13850,K0S
-422 1.0 1.0 D+,Sigma1385+,K0S
-423 1.0 1.0 D+,Lambda1405,K+
-424 1.0 1.0 D+,Sigma13850,K+
-430 1.0 1.0 Delta2050++,n
-501 1.0 1.0 NStar1650@[Lambda@K+],p,pi0
-502 1.0 1.0 NStar1710@[Lambda@K+],p,pi0
-503 1.0 1.0 NStar1720@[Lambda@K+],p,pi0
-504 1.0 1.0 NStar1875@[Lambda@K+],p,pi0
-505 1.0 1.0 NStar1880@[Lambda@K+],p,pi0
-506 1.0 1.0 NStar1895@[Lambda@K+],p,pi0
-507 1.0 1.0 NStar1900@[Lambda@K+],p,pi0
-508 1.0 1.0 NStar2190@[Lambda@K+],p,pi0
-655	1.0	0.0276463	Lambda,p,pi+,K0L
+@Ch    Width    Crossection    Reaction
 
+@ Pi0 Dalitz decay
+1     1.0   1.0         p,p,pi+,pi-,pi0
+2     1.0   1.0         p,p,pi+,pi-,pi0,pi0
+3     1.0   1.0         p,p,pi+,pi-,pi0,pi0,pi0
+
+@Two pi- production
+10    1.0   1.0         p,p,pi+,pi+,pi-,pi-
+11    1.0   1.0         p,n,pi+,pi+,pi+,pi-,pi-
+
+@ Lambda1115
+20    1.0   1.0         p,Lambda,K+
+21    1.0   1.0         p,Lambda,K0S,pi+
+22    1.0   1.0         p,Lambda,K+,pi+,pi-
+23    1.0   1.0         p,Lambda,K0,pi+,pi0
+
+@ Lambda1115 and di-lepton source
+40    1.0   1.0         p,Lambda,K+,pi0
+41    1.0   1.0         p,Lambda,K0S,pi+,pi0
+42    1.0   1.0         p,Lambda,K0S,pi+,pi0,pi0
+@43    1.0   1.0         p,K+,Lambda(1520) approx. 3% dacay into Lambda+2Pi0
+
+@ Sigma0
+60    1.0   1.0         p,Sigma0,K+
+
+@ Sigma0 and di-lepton source
+81    1.0   1.0         p,Sigma0,K0,Pi+
