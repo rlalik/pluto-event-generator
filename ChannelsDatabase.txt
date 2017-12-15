@@ -32,4 +32,4 @@
 60    1.0   1.0         p,Sigma0,K+
 
 @ Sigma0 and di-lepton source
-81    1.0   1.0         p,Sigma0,K0,Pi+
+80    1.0   1.0         p,Sigma0,K0,Pi+
