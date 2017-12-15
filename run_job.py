@@ -18,9 +18,9 @@ def_script='job_script.sh'
 def_dir='./'
 
 parser=argparse.ArgumentParser(description='Submit dst analysis to GSI batch farm')
-parser.add_argument('arguments', help='list of arguments',type=str)
+parser.add_argument('arguments', help='list of arguments', type=str, nargs='+')
 parser.add_argument('-p', '--part', help='partition', type=str, default="main")
-parser.add_argument('-f', '--file', help='input is single file', action='store_true', default=True)
+parser.add_argument('-f', '--file', help='input is in a file', action='store_true', default=False)
 parser.add_argument('-e', '--events', help='number of events per file to be processed',type=int, default=10000)
 parser.add_argument('-t', '--time', help='time need to finish task', default=def_time, type=int)
 parser.add_argument('-m', '--mem', help='requested memory', default=def_mem, type=str)
@@ -40,12 +40,13 @@ if __name__=="__main__":
     resources = tpl_resources.format(int(args.time/60), args.time % 60, args.mem)
     lines = []
 
-    if args.file is False:
-        f = open(args.arguments)
+    if args.file is True:
+        f = open(args.arguments[0])
         lines = f.readlines()
+        print(lines)
         f.close()
     else:
-        lines.append(args.arguments)
+        lines = args.arguments
 
     for entry in lines:
         entry = entry.strip()
