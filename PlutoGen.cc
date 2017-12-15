@@ -1,26 +1,5 @@
 #ifndef __CINT__
-/*
-#include "PChannel.h"
-#include "PData.h"
-#include "PDecayChannel.h"
-#include "PDecayManager.h"
-#include "PDiLepton.h"
-#include "PFileInput.h"
-#include "PFilter.h"
-#include "PFireball.h"
-#include "PKinematics.h"
-#include "PParticle.h"
-#include "PReaction.h"
-#include "PThermal.h"
-#include "PUtils.h"
-#include "TApplication.h"
-*/
-/*
-# include "/home/eepple/hadesdst/function_collection/FAT_hydraheaders.h"
-# include "/home/eepple/hadesdst/function_collection/FAT_RootHeaders.h"
-# include "/home/eepple/hadesdst/function_collection/FAT_ProtonProtonHeader.h"
-# include "/home/eepple/hadesdst/function_collection/FAT_physicfunc.h"
-*/
+
 # include <PParticle.h>
 # include <PData.h>
 # include <PStaticData.h>
@@ -37,8 +16,6 @@
 
 #include <TROOT.h>
 
-//using namespace std;
-
 #endif
 
 #define PR(x) std::cout << "++DEBUG: " << #x << " = |" << x << "| (" << __FILE__ << ", " << __LINE__ << ")\n";
@@ -51,6 +28,11 @@
 #include <iomanip>
 
 #include <getopt.h>
+
+
+//#define NSTARS 1        // define custom Nstar resonances
+#define LOOP_DEF 1
+
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
     std::stringstream ss(s);
@@ -152,8 +134,6 @@ int main(int argc, char **argv) {
 
         switch (c) {
             case 0:
-//                 PR(long_options[option_index].name);
-//                 PR(*(long_options[option_index].flag));
                 if (long_options[option_index].flag != 0)
                     break;
                 printf ("option %s", long_options[option_index].name);
@@ -256,13 +236,10 @@ int main(int argc, char **argv) {
     int pid_resonance = 0;
     int decay_index = 0;
 
-//#define NSTARS 1
-#define LOOP_DEF 1
-
 #ifdef NSTARS
 #ifdef LOOP_DEF
     const int nstar_cnt = 8;
-//    const char * nstar_arr[nstar_num] = { "NStar1650", "NStar1710", "NStar1720", "NStar1875", "NStar1880", "NStar1895", "NStar1900", "NStar2190" };
+
     int nstar_num[nstar_cnt] = { 1650, 1710, 1720, 1875, 1880, 1895, 1900, 2190 };
     float nstar_mass[nstar_cnt] = { 1.655, 1.710, 1.720, 1.875, 1.870, 1.895, 1.900, 2.190 };
     float nstar_width[nstar_cnt] = { 0.150, 0.200, 0.250, 0.220, 0.235, 0.090, 0.250, 0.0250 };
@@ -275,7 +252,6 @@ int main(int argc, char **argv) {
         sprintf(res_name, "NStar%d", nstar_num[i]);
         sprintf(res_decay, "%s --> Lambda + K+", res_name);
         printf("--- [%d] Adding resonance id = %d: %s : %s\n", i, nstar_num[i], res_name, res_decay);
-//        pid_resonance = makeStaticData()->AddParticle(nstar_num[i], res_name, nstar_mass[i]);  //Mass in GeV/c2
         pid_resonance = makeStaticData()->AddParticle(-1, res_name, nstar_mass[i]);  //Mass in GeV/c2
         printf("   PID resonance: %d\n", pid_resonance);
         makeStaticData()->SetParticleTotalWidth(res_name, nstar_width[i]);
@@ -290,7 +266,6 @@ int main(int argc, char **argv) {
         makeStaticData()->SetParticleTotalWidth("NStar1650",0.100);
         makeStaticData()->SetParticleBaryon("NStar1650",1);
         decay_index = makeStaticData()->AddDecay(" NStar1650--> Lambda + K+", "NStar1650","Lambda, K+", 1);
-//    PReaction my_reaction4("49.07","p","p","p NStar1650 [Lambda K+]",outputfilename,0,0,0,1);
         listParticle("NStar1650");
     }
 
@@ -299,7 +274,6 @@ int main(int argc, char **argv) {
         makeStaticData()->SetParticleTotalWidth("NStar1710",0.2);
         makeStaticData()->SetParticleBaryon("NStar1710",1);
         decay_index = makeStaticData()->AddDecay("NStar1710 --> Lambda + K+", "NStar1710","Lambda, K+", 1);
-//    PReaction my_reaction4("49.07","p","p","p NStar1720 [Lambda K+]",outputfilename,0,0,0,1);
         listParticle("NStar1710");
     }
 
@@ -308,7 +282,6 @@ int main(int argc, char **argv) {
         makeStaticData()->SetParticleTotalWidth("NStar1720",0.2);
         makeStaticData()->SetParticleBaryon("NStar1720",1);
         decay_index = makeStaticData()->AddDecay("NStar1720 --> Lambda + K+", "NStar1720","Lambda, K+", 1);
-//    PReaction my_reaction4("49.07","p","p","p NStar1720 [Lambda K+]",outputfilename,0,0,0,1);
         listParticle("NStar1720");
     }
 
@@ -317,7 +290,6 @@ int main(int argc, char **argv) {
         makeStaticData()->SetParticleTotalWidth("NStar1900",0.200);
         makeStaticData()->SetParticleBaryon("NStar1900",1);
         decay_index = makeStaticData()->AddDecay("NStar1900 --> Lambda + K+", "NStar1900","Lambda, K+", 1);
-//    PReaction my_reaction4("49.07","p","p","p NStar1900 [Lambda K+]",outputfilename,0,0,0,1);
         listParticle("NStar1900");
     }
 
@@ -326,7 +298,6 @@ int main(int argc, char **argv) {
         makeStaticData()->SetParticleTotalWidth("NStar2190",0.200);
         makeStaticData()->SetParticleBaryon("NStar2190",1);
         decay_index = makeStaticData()->AddDecay("NStar2190 --> Lambda + K+", "NStar2190","Lambda, K+", 1);
-        //    PReaction my_reaction4("49.07","p","p","p NStar2190 [Lambda K+]",outputfilename,0,0,0,1);
         listParticle("NStar2190");
     }
 
@@ -335,8 +306,6 @@ int main(int argc, char **argv) {
 #endif /* NSTARS */
 
     makeDistributionManager()->Exec("strangeness:init");
-
-    //loadData("/home/gu27buz/hadesdst/pp35/Sim/Pluto/missing_particles.dat");
 
     makeStaticData();
     int dpp_2050_pid = makeStaticData()->AddParticle(-1, "Delta2050++", 2.05);
@@ -351,7 +320,6 @@ int main(int argc, char **argv) {
     makeStaticData()->AddAlias("Lambda15200","Lambda(1520)0");
     makeStaticData()->SetParticleTotalWidth("Lambda15200",0.0156);
     makeStaticData()->SetParticleBaryon("Lambda15200",1);
-    //makeStaticData()->SetParticleLMass("Lambda15200",1.2);
 
     makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 );  
     makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 );   
@@ -368,16 +336,6 @@ int main(int argc, char **argv) {
 
     listParticle("Lambda15200");
 
-/*
-0 Lambda1520  1.5195 0.0156 0 0 -1 1 7 1 0 0
-  .22500      12014   "Lambda(1520)0 --> K- + p"
-  .22500      16013   "Lambda(1520)0 --> K0S + n"
-  .14000      9019    "Lambda(1520)0 --> Sigma+ + pi-"
-  .14000      8021    "Lambda(1520)0 --> Sigma- + pi+"
-  .14000      7020    "Lambda(1520)0 --> Sigma0 + pi0"
-  .05000      9008018 "Lambda(1520)0 --> Lambda + pi+ + pi-"
-  .05000      7007018 "Lambda(1520)0 --> Lambda + pi0 + pi0"
-*/
     for (int l = par_loop_offset; l < par_loop_offset+par_loops; ++l)
     {
         PUtils::SetSeed(l+par_seed);
@@ -414,7 +372,7 @@ int main(int argc, char **argv) {
         p_p->SetDefault("Sigma1385+");
         p_p->SetDefault("Sigma1385-");
         p_p->SetDefault("Sigma13850");
-//        p_p->SetDefault("Lambda1520");
+        p_p->SetDefault("Lambda15200");
         p_p->SetDefault("D++");
         p_p->SetDefault("D+");
         p_p->SetDefault("D-");
@@ -435,12 +393,9 @@ int main(int argc, char **argv) {
         p_p->SetDefault("phi");
 //        p_p->SetDefault("K0*896");
         p_p->SetDefault("Delta2050++");
-        p_p->SetDefault("Lambda15200");
 
         c->AddChannel(width,size,channels);
-        //PR(par_events);
         p_p->InitReaction(q,c);              // initialize the reaction
-
 
         p_p->loop(
                 par_scale > 0 ? par_scale * crosssection : par_events,
