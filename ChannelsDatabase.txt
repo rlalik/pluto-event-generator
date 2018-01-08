@@ -12,28 +12,29 @@
 
 
 @ Pi0 Dalitz decay
-30     1.0   1.0         p,p,pi+,pi-,pi0		
-31     1.0   1.0         p,p,pi+,pi-,pi0,pi0		
-32     1.0   1.0         p,p,pi+,pi-,pi0,pi0,pi0	
+1     1.0   1.0         p,p,pi+,pi-,pi0
+2     1.0   1.0         p,p,pi+,pi-,pi0,pi0
+3     1.0   1.0         p,p,pi+,pi-,pi0,pi0,pi0
+4     1.0   300.0       p,n,pi+,pi+,pi-,pi0
 
 @Two pi- production
-20     1.0   1.0         p,p,pi+,pi+,pi-,pi-		
-21     1.0   1.0         p,n,pi+,pi+,pi+,pi-,pi-		
+10    1.0   1.0         p,p,pi+,pi+,pi-,pi-
+11    1.0   1.0         p,n,pi+,pi+,pi+,pi-,pi-
 
 @ Lambda1115
-@30    1.0   1.0         p,Lambda,K+ why????
-41     1.0   1.0         p,Lambda,K0S,pi+		
-42     1.0   1.0         p,Lambda,K+,pi+,pi-		
-@43    1.0   1.0         p,Lambda,K0S,pi+,pi0
+20    1.0   1.0         p,Lambda,K+
+21    1.0   1.0         p,Lambda,K0S,pi+
+22    1.0   1.0         p,Lambda,K+,pi+,pi-
+23    1.0   1.0         p,Lambda,K0,pi+,pi0
 
 @ Lambda1115 and di-lepton source
-36    1.0   1.0         p,Lambda,K+,pi0			
-60    1.0   1.0         p,Lambda,K0S,pi+,pi0		
-38    1.0   1.0         p,Lambda,K0S,pi+,pi0,pi0	
-@39   1.0   1.0         p,K+,Lambda(1520) approx. 3% dacay into Lambda+2Pi0
+40    1.0   1.0         p,Lambda,K+,pi0
+41    1.0   1.0         p,Lambda,K0S,pi+,pi0
+42    1.0   1.0         p,Lambda,K0S,pi+,pi0,pi0
+@43    1.0   1.0         p,K+,Lambda(1520) approx. 3% dacay into Lambda+2Pi0
 
 @ Sigma0
-90    1.0   1.0         p,Sigma0,K+			
+60    1.0   1.0         p,Sigma0,K+
 
 @ Sigma0 and di-lepton source
-61   1.0   1.0         p,Sigma0,K0,Pi+			
+80    1.0   1.0         p,Sigma0,K0,Pi+
