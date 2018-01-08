@@ -16,25 +16,56 @@
 2     1.0   1.0         p,p,pi+,pi-,pi0,pi0
 3     1.0   1.0         p,p,pi+,pi-,pi0,pi0,pi0
 4     1.0   300.0       p,n,pi+,pi+,pi-,pi0
+5     1.0   88.0        p,p,pi+,pi+,pi-,pi-,pi0
+6     1.0   20.0        p,p,pi+,pi+,pi+,pi-,pi-,pi-,pi0
 
 @Two pi- production
 10    1.0   1.0         p,p,pi+,pi+,pi-,pi-
 11    1.0   1.0         p,n,pi+,pi+,pi+,pi-,pi-
+12    1.0   88.0        p,p,pi+,pi+,pi-,pi-,pi0
 
 @ Lambda1115
 20    1.0   1.0         p,Lambda,K+
 21    1.0   1.0         p,Lambda,K0S,pi+
 22    1.0   1.0         p,Lambda,K+,pi+,pi-
 23    1.0   1.0         p,Lambda,K0,pi+,pi0
+24    1.0   29.6        n,Lambda,K0,pi+,pi+
+25    1.0   14.2        p,Lambda,K+,pi+,pi0,pi-
+26    1.0   6.2         p,Lambda,K0,pi+,pi+,pi-
+27    1.0   10.1        n,Lambda,K+,pi+,pi+,pi-
+28    1.0   34.0        p,Lambda,K0,pi+,pi+,pi-,pi0
+29    1.0   13.0        n.Lambda,K0,pi+,pi+,pi+,pi-
 
 @ Lambda1115 and di-lepton source
 40    1.0   1.0         p,Lambda,K+,pi0
 41    1.0   1.0         p,Lambda,K0S,pi+,pi0
-42    1.0   1.0         p,Lambda,K0S,pi+,pi0,pi0
-@43    1.0   1.0         p,K+,Lambda(1520) approx. 3% dacay into Lambda+2Pi0
+42    1.0   10.0        p,Lambda,K+,pi0,pi0
+43    1.0   20.0        n,Lambda,K+,pi+,pi0
+44    1.0   7.0         p,Lambda,K+,pi0,pi0,pi0
+45    1.0   7.0         p,Lambda,K0S,pi+,pi0,pi0
+46    1.0   14.2        p,Lambda,K+,pi+,pi-,pi0
+@47    1.0   1.0         p,K+,Lambda(1520) approx. 3% dacay into Lambda+2Pi0
 
 @ Sigma0
-60    1.0   1.0         p,Sigma0,K+
+60    1.0   27.0        p,Sigma0,K+
+61    1.0   18.0        p,Sigma0,K+,pi0
+62    1.0   18.0        p,Sigma0,K0,pi+
+63    1.0   13.7        p,Sigma0,K+,pi+,pi-
 
 @ Sigma0 and di-lepton source
-80    1.0   1.0         p,Sigma0,K0,Pi+
+80    1.0   18.0        p,Sigma0,K0,pi+
+81    1.0   6.6         n,Sigma0,K0,pi+,pi+
+82    1.0   13.7        p,Sigma0,K+,pi+,pi-
+
+@ Sigma-
+90    1.0   22.0        p,Sigma-,K+,pi+,pi0
+91    1.0   13.0        p,Sigma-,K0,pi+,pi+,pi0
+
+@ K0 production
+100   1.0   6.4         p,p,K0,K0
+101   1.0   15.7        p,n,K0,K0,pi+
+102   1.0   16.0        p,p,K0,K+,pi-
+103   1.0   10.5        p,Sigma+,K0,pi+,pi-
+104   1.0   5.4         p,n,K0,K+,pi+,pi-
+105   1.0   6.3         p,p,K0,K0,pi+,pi-
+106   1.0   36.0        p,n,K0,K0,pi+,pi+,pi-
