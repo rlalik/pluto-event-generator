@@ -9,6 +9,7 @@ echo offset=$offset
 echo loops=$loops
 echo events=$events
 echo seed=$seed
+echo energy=$energy
 
 #var1=$(echo $STR | cut -f1 -d:)
 #var2=$(echo $STR | cut -f2 -d:)
@@ -20,4 +21,4 @@ cd /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen
 
 date
 
-time /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen/PlutoGen $pattern -e $events -f $offset -l $loops -s $seed -o output
+time /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen/PlutoGen $pattern -e $events -f $offset -l $loops -s $seed -o output -E $energy

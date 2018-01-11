@@ -26,6 +26,7 @@ parser.add_argument('-t', '--time', help='time need to finish task', default=def
 parser.add_argument('-m', '--mem', help='requested memory', default=def_mem, type=str)
 parser.add_argument('-s', '--script', help='execute script', default=def_script)
 parser.add_argument('-d', '--dir', help='working directory', default=def_dir)
+parser.add_argument('-E', '--energy', help='beam energy', default=4.5, type=float)
 args=parser.parse_args()
 
 print args
@@ -76,7 +77,8 @@ if __name__=="__main__":
             seed = int(a[3])
 
         for i in xrange(offset, offset+loops):
-            command = "-o {:s} {:s} -J {:s} --export=\"pattern={:s},offset={:d},loops={:d},seed={:d},events={:d}\" {:s}".format(logfile, resources, entry, chan, i, 1, seed, events, jobscript)
+            job_name = "{:s}_{:d}".format(chan,i)
+            command = "-o {:s} {:s} -J {:s} --export=\"pattern={:s},offset={:d},loops={:d},seed={:d},events={:d},energy={:f}\" {:s}".format(logfile, resources, job_name, chan, i, 1, seed, events, args.energy, jobscript)
             qsub_command='sbatch ' + command
             print qsub_command
             os.system(qsub_command)
