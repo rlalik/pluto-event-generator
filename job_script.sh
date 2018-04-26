@@ -3,6 +3,7 @@
 date
 
 . /lustre/nyx/hades/user/rlalik/hades/pp45/profile.sh
+. /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen/pluto_profile.sh
 
 echo channel=$pattern
 echo offset=$offset

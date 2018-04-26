@@ -21,7 +21,7 @@ parser=argparse.ArgumentParser(description='Submit dst analysis to GSI batch far
 parser.add_argument('arguments', help='list of arguments', type=str, nargs='+')
 parser.add_argument('-p', '--part', help='partition', type=str, default="main")
 parser.add_argument('-f', '--file', help='input is in a file', action='store_true', default=False)
-parser.add_argument('-e', '--events', help='number of events per file to be processed',type=int, default=10000)
+parser.add_argument('-e', '--events', help='number of events per file to be processed',type=int, default=25000)
 parser.add_argument('-t', '--time', help='time need to finish task', default=def_time, type=int)
 parser.add_argument('-m', '--mem', help='requested memory', default=def_mem, type=str)
 parser.add_argument('-s', '--script', help='execute script', default=def_script)

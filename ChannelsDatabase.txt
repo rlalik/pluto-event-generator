@@ -41,7 +41,11 @@
 45    1.0   7.0         p,Lambda,K0S,pi+,pi0,pi0
 46    1.0   14.2        p,Lambda,K+,pi+,pi-,pi0
 47    1.0   34.0        p,Lambda,K0S,pi+,pi+,pi-,pi0
-48    1.0   1.0         p,K+,Lambda(1520)
+48    1.0   1.0         p,K+,Lambda(1520)0
+@[Lambda,dilepton[e+,e-]]
+49    1.0   1.0         p,K+,Lambda(1520)0
+@
+
 @ above: approx. 3% dacay into Lambda+2Pi0
 
 @ Sigma0
@@ -60,6 +64,7 @@
 
 @ Ksi
 90    1.0   1.0         Xi-,K+,K+,p
+91    1.0   1.0         Lambda,Lambda,K+,K+
 
 @ K0 production
 100   1.0   6.4         p,p,K0S,K0S

@@ -1,18 +1,19 @@
 #ifndef __CINT__
 
-# include <PParticle.h>
-# include <PData.h>
-# include <PStaticData.h>
-# include <PChannel.h>
-# include <PFireball.h>
-# include <PReaction.h>
-# include <PDecayChannel.h>
-# include <PDecayManager.h>
-# include <PUtils.h>
-# include <PFileInput.h>
-# include <PFilter.h>
-# include <PKinematics.h>
-# include <TApplication.h>
+#include <PParticle.h>
+#include <PData.h>
+#include <PStaticData.h>
+#include <PChannel.h>
+#include <PFireball.h>
+#include <PReaction.h>
+#include <PDecayChannel.h>
+#include <PDecayManager.h>
+#include <PUtils.h>
+#include <PFileInput.h>
+#include <PFilter.h>
+#include <PKinematics.h>
+#include <PResonanceDalitz.h>
+#include <TApplication.h>
 
 #include <TROOT.h>
 
@@ -91,6 +92,66 @@ static inline std::string & clear_chars(std::string &str, char s)
         str.erase(pos, 1);
     }
     return str;
+}
+
+bool find_decay(const std::string line, size_t spos, size_t epos, size_t & dspos)
+{
+    printf("  +++   find decay: %s\n", line.substr(spos, string::npos).c_str());
+    dspos = line.find('[', spos);
+    if (dspos < epos)
+        return true;
+
+    return false;
+}
+
+size_t parse_reaction(const std::string line, size_t spos, size_t epos, PDecayChannel * pdc)
+{
+    static int level = 0;
+    ++level;
+    printf("  +++%d parse string: %s\n", level, line.substr(spos, epos).c_str());
+    size_t next_stop = spos;
+    size_t this_stop = spos;
+    size_t decay_start = 0;
+    size_t decay_stop = 0;
+    PDecayChannel * c = nullptr;
+    while (next_stop != epos and next_stop != string::npos)
+    {
+        next_stop = line.find_first_of(",]", this_stop);
+
+        bool ret = find_decay(line, this_stop, next_stop, decay_start);
+        printf("        decay result = %d at %lu-%lu\n", ret, decay_start, decay_stop);
+        if (ret == true)
+        {
+            if (pdc)
+            {
+                c = new PDecayChannel();
+                const char * c_name = line.substr(this_stop, decay_start-this_stop).c_str();
+                c->AddChannel(1.0, const_cast<char *>(c_name));
+                pdc->AddChannel(c);
+                printf("+++ found particle: %s\n", line.substr(this_stop, decay_start-this_stop).c_str());
+            }
+            else
+            {
+                c = nullptr;
+            }
+            next_stop = parse_reaction(line, decay_start+1, decay_stop-2, c);
+        }
+        else
+        {
+            if (pdc)
+            {
+                pdc->AddChannel(1.0, const_cast<char *>(line.substr(this_stop, next_stop-this_stop).c_str()));
+                printf("+++ found particle: %s\n", line.substr(this_stop, next_stop-this_stop).c_str());
+            }
+        }
+        if (next_stop >= line.length()) return string::npos;
+
+        this_stop = next_stop + 1;
+        if (line[next_stop] == ']') return this_stop;
+    }
+
+    --level;
+    return 0;
 }
 
 #ifndef __CINT__
@@ -320,20 +381,31 @@ int main(int argc, char **argv) {
     makeStaticData()->AddAlias("Lambda15200","Lambda(1520)0");
     makeStaticData()->SetParticleTotalWidth("Lambda15200",0.0156);
     makeStaticData()->SetParticleBaryon("Lambda15200",1);
+    makeStaticData()->SetParticleSpin("Lambda15200",3);
+    makeStaticData()->SetParticleParity("Lambda15200",1);
 
-    makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 );  
-    makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 );   
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma+ + pi-", "Lambda15200", "Sigma+, pi-", .139096);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma- + pi+", "Lambda15200", "Sigma-, pi+", .139096);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 );  
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 );   
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma+ + pi-", "Lambda15200", "Sigma+, pi-", .139096);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma- + pi+", "Lambda15200", "Sigma-, pi+", .139096);
     makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0", "Lambda15200", "Sigma0, pi0", .139096);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + g", "Lambda15200", "Sigma0, g", .019373);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi+ + pi-", "Lambda15200", "Lambda, pi+, pi-", .014638);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi0 + pi0", "Lambda15200", "Lambda, pi0, pi0", .007319);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + g", "Lambda15200", "Lambda, g", .007948);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)+ + pi-", "Lambda15200", "Sigma1385+, pi-", .028780);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)- + pi+", "Lambda15200", "Sigma1385-, pi+", .028780);
-    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)0 + pi0", "Lambda15200", "Sigma13850, pi0", .028780);
+    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0 + pi0", "Lambda15200", "Sigma0, pi0, pi0", .009/5.0);
+    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi+ + pi-", "Lambda15200", "Sigma0, pi+, pi-", .009/5.0);
 
+//  makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + g", "Lambda15200", "Sigma0, g", .019373);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi+ + pi-", "Lambda15200", "Lambda, pi+, pi-", .014638);
+    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi0 + pi0", "Lambda15200", "Lambda, pi0, pi0", .1/3.0);
+    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + g", "Lambda15200", "Lambda, g", .0085);
+//00.9    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
+
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)+ + pi-", "Lambda15200", "Sigma1385+, pi-", .028780);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)- + pi+", "Lambda15200", "Sigma1385-, pi+", .028780);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)0 + pi0", "Lambda15200", "Sigma13850, pi0", .028780);
+
+//    PResonanceDalitz * L15200_dalitz = new PResonanceDalitz("Lambda15200_dalitz@Lambda15200_to_Lambda_dilepton","dgdm from Zetenyi/Wolf", -1);
+//    L15200_dalitz->setGm(0.719);
+//    makeDistributionManager()->Add(L15200_dalitz);
+ 
     listParticle("Lambda15200");
 
     for (int l = par_loop_offset; l < par_loop_offset+par_loops; ++l)
@@ -363,6 +435,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < size; ++i)
         {
             channels[i] = new PParticle(tokens[i].c_str());
+            printf("+++ channel: %s\n", tokens[i].c_str());
         }
 
         PDecayManager *p_p = new PDecayManager;
@@ -395,6 +468,9 @@ int main(int argc, char **argv) {
         p_p->SetDefault("Delta2050++");
 
         c->AddChannel(width,size,channels);
+//        parse_reaction(particles, 0, string::npos, c);
+
+
         p_p->InitReaction(q,c);              // initialize the reaction
 
         p_p->loop(
@@ -409,6 +485,8 @@ int main(int argc, char **argv) {
         std::string _part = particles;
         replace_chars(_part, '@', ' ');
         replace_chars(_part, ',', ' ');
+
+        printf("making reaction: p+p -> %s\n", _part.c_str());
 
         PReaction my_reaction(str_en, "p", "p", const_cast<char *>(_part.c_str()), const_cast<char *>(tmpname.c_str()), 0, 0, 0, 1);
         my_reaction.Print();
