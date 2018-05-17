@@ -426,9 +426,9 @@ int main(int argc, char **argv) {
 
         char buff[200];
         if (par_output.length())
-            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%03d", par_output.c_str(), channel, par_events, l+par_seed);
+            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%04d", par_output.c_str(), channel, par_events, l+par_seed);
         else
-            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%03d", channel, par_events, l+par_seed);
+            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%04d", channel, par_events, l+par_seed);
 
         std::string tmpname = buff;
 

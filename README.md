@@ -73,3 +73,10 @@ where `events` are optional (default: 10000) ang `args` can be multiple entries 
 If you wish to change the energy, please edit line #12 of `job_script.sh`.
 
 Don't forget to create `log` directory if using the farm.
+
+
+NOTES
+=====
+
+Channel 1 seed 365 fails at event 27311
+Seed 9365 was generated and used in place of 365
