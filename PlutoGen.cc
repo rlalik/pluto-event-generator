@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
     int par_loop_offset = 0;
     int par_scale = 0;
     int par_seed = 0;
-    Float_t Eb = 3.5;         // beam energy in AGeV
+    Float_t Eb = 4.5;         // beam energy in AGeV
 
     std::string par_database = "ChannelsDatabase.txt";
     std::string par_output = "";
@@ -402,6 +402,8 @@ int main(int argc, char **argv) {
         makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi0 + pi0", "Lambda15200", "Lambda, pi0, pi0", .1/3.0);
         makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + g", "Lambda15200", "Lambda, g", .0085);
     }
+    listParticle("Lambda15200");
+
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 );  
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 );   
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma+ + pi-", "Lambda15200", "Sigma+, pi-", .139096);
@@ -415,8 +417,56 @@ int main(int argc, char **argv) {
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)- + pi+", "Lambda15200", "Sigma1385-, pi+", .028780);
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)0 + pi0", "Lambda15200", "Sigma13850, pi0", .028780);
 
- 
-    listParticle("Lambda15200");
+    Int_t pid_lambda1405 = makeStaticData()->AddParticle(-1,"Lambda1405z", 1.405);
+    makeStaticData()->AddAlias("Lambda1405z","Lambda(1405)z");
+    makeStaticData()->SetParticleTotalWidth("Lambda1405z", 0.05);
+    makeStaticData()->SetParticleBaryon("Lambda1405z", 1);
+    makeStaticData()->SetParticleSpin("Lambda1405z", 1);
+    makeStaticData()->SetParticleParity("Lambda1405z", -1);
+
+    if (selected_channel == 50)
+    {
+	makeStaticData()->AddDecay("Lambda(1405)z -->  Lambda + dilepton", "Lambda1405z", "Lambda, dilepton", 0.0085 / 137. );
+	PResonanceDalitz * newmodel = new PResonanceDalitz("Lambda1405z_dalitz@Lambda1405z_to_Lambda_dilepton",
+			"dgdm from Zetenyi/Wolf", -1);
+	newmodel->setGm(0.719);
+	makeDistributionManager()->Add(newmodel);
+    }
+    if (selected_channel == 51)
+    {
+        makeStaticData()->AddDecay("Lambda(1405)z -->  pi0 + Sigma0", "Lambda1405z", "pi0, Sigma0", 0.33);
+	makeStaticData()->AddDecay("Lambda(1405)z -->  pi+ + Sigma0", "Lambda1405z", "pi+, Sigma-", 0.33);
+	makeStaticData()->AddDecay("Lambda(1405)z -->  pi- + Sigma0", "Lambda1405z", "pi-, Sigma+", 0.33);
+	makeStaticData()->AddDecay("Lambda(1405)z -->  gamma + Lambda", "Lambda1405z", "g, Lambda", 0.0085);
+    }
+
+    listParticle("Lambda1405z");
+
+    Int_t pid_Sigma1385 = makeStaticData()->AddParticle(-1,"Sigma1385z", 1.385);
+    makeStaticData()->AddAlias("Sigma1385z","Sigma(1385)z");
+    makeStaticData()->SetParticleTotalWidth("Sigma1385z", 0.0395);
+    makeStaticData()->SetParticleBaryon("Sigma1385z", 1);
+    makeStaticData()->SetParticleSpin("Sigma1385z", 3);
+    makeStaticData()->SetParticleParity("Sigma1385z", 1);
+
+    if (selected_channel == 52)
+    {
+	makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + dilepton", "Sigma1385z", "Lambda, dilepton", 0.0125 / 137. );
+	PResonanceDalitz * newmodel = new PResonanceDalitz("Sigma1385z_dalitz@Sigma1385z_to_Lambda_dilepton",
+			"dgdm from Zetenyi/Wolf", -1);
+	newmodel->setGm(0.719);
+	makeDistributionManager()->Add(newmodel);
+    }
+    if (selected_channel == 53)
+    {
+        makeStaticData()->AddDecay("Sigma(1385)z -->  pi0 + Sigma0", "Sigma1385z", "pi0, Sigma0", 0.12/3);
+	makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + pi", "Sigma1385z", "pi0, Lambda", 0.87);
+	makeStaticData()->AddDecay("Sigma(1385)z -->  gamma + Lambda", "Sigma1385z", "g, Lambda", 0.0125);
+    }
+
+    listParticle("Sigma1385z");
+
+    printf("******************* selected channel: %d ***************************\n", selected_channel);
 
     for (int l = par_loop_offset; l < par_loop_offset+par_loops; ++l)
     {
@@ -456,6 +506,8 @@ int main(int argc, char **argv) {
         p_p->SetDefault("Sigma1385-");
         p_p->SetDefault("Sigma13850");
         p_p->SetDefault("Lambda15200");
+        p_p->SetDefault("Lambda1405z");
+        p_p->SetDefault("Sigma1385z");
         p_p->SetDefault("D++");
         p_p->SetDefault("D+");
         p_p->SetDefault("D-");

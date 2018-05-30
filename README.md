@@ -78,5 +78,56 @@ Don't forget to create `log` directory if using the farm.
 NOTES
 =====
 
-Channel 1 seed 365 fails at event 27311
-Seed 9365 was generated and used in place of 365
+Branching ratios for selected channels:
+---------------------------------------
+
+**48 - L(1520) -> L dalitz**
+
+Total cross-section needs to be scaled for BR = 0.0085/137 = 6.2e-05
+
+**49 - L(1520) -> anything than Dalitz**
+
+Five contributions
+
+| Decay channel      | BR       |
+|--------------------|----------|
+| Simga0 + pi0       | 0.139096 |
+| Sigma0 + pi0 + pi0 | 0.009/5  |
+| Sigma0 + pi+ + pi- | 0.009/5  |
+| Lambda + pi0 + pi0 | 0.1/3    |
+| Lambda + gamma     | 0.0085   |
+|--------------------|----------|
+| TOTAL              | 0.184529 |
+
+**50 - L(1405) -> L dalitz**
+
+Total cross-section needs to be scaled for BR = 0.0085/137 = 6.2e-05
+
+**51 - L(1405) -> anything than Dalitz**
+
+Five contributions
+
+| Decay channel      | BR       |
+|--------------------|----------|
+| Simga0 + pi0       | 0.33     |
+| Sigma+ + pi-       | 0.33     |
+| Sigma- + pi+       | 0.3      |
+| Lambda + gamma     | 0.0085   |
+|--------------------|----------|
+| TOTAL              | 0.9985   |
+
+**52 - S(1305) -> L dalitz**
+
+Total cross-section needs to be scaled for BR = 0.0125/137 = 9.124e-05
+
+**53 - S(1305) -> anything than Dalitz**
+
+Five contributions
+
+| Decay channel      | BR       |
+|--------------------|----------|
+| Simga0 + pi0       | 0.12/3   |
+| Lambda + pi0       | 0.87     |
+| Lambda + gamma     | 0.0125   |
+|--------------------|----------|
+| TOTAL              | 0.9225   |

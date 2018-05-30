@@ -44,6 +44,10 @@
 48    1.0   1.0         p,K+,Lambda(1520)0
 @[Lambda,dilepton[e+,e-]]
 49    1.0   1.0         p,K+,Lambda(1520)0
+50    1.0   1.0         p,K+,Lambda(1405)z
+51    1.0   1.0         p,K+,Lambda(1405)z
+52    1.0   1.0         p,K+,Sigma(1385)z
+53    1.0   1.0         p,K+,Sigma(1385)z
 @
 
 @ above: approx. 3% dacay into Lambda+2Pi0
