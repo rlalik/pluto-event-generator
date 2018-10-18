@@ -53,8 +53,8 @@
 @ Delta dalitz
 55    1.0   1.0         D+[dilepton[e+,e-],p],p,pi+,pi-
 56    1.0   1.0         D0[dilepton[e+,e-],n],p,pi+,pi+,pi-
-59    1.0   1.0         D+[dilepton[e+,e-],p],p,pi+,pi-
-
+57    1.0   1.0         D+[dilepton[e+,e-],p],Lambda,K+
+58    1.0   1.0         D0[dilepton[e+,e-],n],Lambda,K+,pi+
 
 @ Sigma0
 60    1.0   27.0        p,Sigma0,K+
