@@ -21,6 +21,7 @@
 
 #define PR(x) std::cout << "++DEBUG: " << #x << " = |" << x << "| (" << __FILE__ << ", " << __LINE__ << ")\n";
 
+#include <list>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -104,54 +105,79 @@ bool find_decay(const std::string line, size_t spos, size_t epos, size_t & dspos
     return false;
 }
 
-size_t parse_reaction(const std::string line, size_t spos, size_t epos, PDecayChannel * pdc)
+typedef std::list<PChannel *> PartChain;
+typedef std::vector<PParticle *> Particles;
+/*
+void print_pc(const PartChain p_c)
 {
+    printf("###(%d) -> ", p_c.size());
+    for (int i = 0; i < p_c.size(); ++i)
+         printf("%s ", ((PParticle *)p_c[i])->Name() );
+    printf("\n");
+}
+
+void print_p(PParticle ** p_c, int n)
+{
+    printf("+++(%d) -> ", n);
+    for (int i = 0; i < n; ++i)
+         printf("%s ", ((PParticle *)p_c[i])->Name() );
+    printf("\n");
+}
+*/
+Particles parse_reaction(const std::string line, size_t & spos, size_t epos, PartChain & p_c)
+{
+    Particles parts;
+
     static int level = 0;
     ++level;
-    printf("  +++%d parse string: %s\n", level, line.substr(spos, epos).c_str());
-    size_t next_stop = spos;
+    //printf("+++%d parse string: %s\n", level, line.substr(spos, epos).c_str());
+    size_t & next_stop = spos;
     size_t this_stop = spos;
     size_t decay_start = 0;
     size_t decay_stop = 0;
-    PDecayChannel * c = nullptr;
+
     while (next_stop != epos and next_stop != string::npos)
     {
         next_stop = line.find_first_of(",]", this_stop);
 
         bool ret = find_decay(line, this_stop, next_stop, decay_start);
-        printf("        decay result = %d at %lu-%lu\n", ret, decay_start, decay_stop);
+        //printf("        decay result = %d in %lu-%lu\n", ret, decay_start, decay_stop);
         if (ret == true)
         {
-            if (pdc)
+            std::string c_name = line.substr(this_stop, decay_start-this_stop).c_str();
+
+            next_stop = decay_start+1;
+            Particles _parts = parse_reaction(line, next_stop, decay_stop-2, p_c);
+
+            //printf("after %s\n", c_name.c_str());
+            size_t n_in_decay = _parts.size();
+            PParticle ** pp = new PParticle*[n_in_decay+1];
+            pp[0] = new PParticle(c_name.c_str());
+            //pp[0]->Print();
+            for (uint i = 0; i < n_in_decay; ++i)
             {
-                c = new PDecayChannel();
-                const char * c_name = line.substr(this_stop, decay_start-this_stop).c_str();
-                c->AddChannel(1.0, const_cast<char *>(c_name));
-                pdc->AddChannel(c);
-                printf("+++ found particle: %s\n", line.substr(this_stop, decay_start-this_stop).c_str());
+                pp[i+1] = (PParticle *)_parts[i];
+                //pp[i+1]->Print();
             }
-            else
-            {
-                c = nullptr;
-            }
-            next_stop = parse_reaction(line, decay_start+1, decay_stop-2, c);
+            PChannel * channel = new PChannel(pp, n_in_decay);
+            p_c.push_front(channel);
+            parts.push_back(pp[0]);
         }
         else
         {
-            if (pdc)
-            {
-                pdc->AddChannel(1.0, const_cast<char *>(line.substr(this_stop, next_stop-this_stop).c_str()));
-                printf("+++ found particle: %s\n", line.substr(this_stop, next_stop-this_stop).c_str());
-            }
+            std::string c_name = line.substr(this_stop, next_stop-this_stop);
+            //printf("+++ found particle: %s\n", line.substr(this_stop, next_stop-this_stop).c_str());
+            PParticle * p = new PParticle(c_name.c_str());
+            parts.push_back(p);
         }
-        if (next_stop >= line.length()) return string::npos;
+        if (next_stop >= line.length()) { spos = string::npos; return parts; }
 
         this_stop = next_stop + 1;
-        if (line[next_stop] == ']') return this_stop;
+        if (line[next_stop] == ']') { spos = this_stop; return parts; }
     }
 
     --level;
-    return 0;
+    return parts;
 }
 
 #ifndef __CINT__
@@ -246,7 +272,7 @@ int main(int argc, char **argv) {
     int selected_channel = 0;
     while (optind < argc) {
         selected_channel = atoi(argv[optind++]);
-	break;
+        break;
     }
 
     std::vector<std::string> tokens;
@@ -387,8 +413,7 @@ int main(int argc, char **argv) {
 
     if (selected_channel == 48)
     {
-	makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
-
+        makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
         PResonanceDalitz * L15200_dalitz = new PResonanceDalitz("Lambda15200_dalitz@Lambda15200_to_Lambda_dilepton","dgdm from Zetenyi/Wolf", -1);
         L15200_dalitz->setGm(0.719);
         makeDistributionManager()->Add(L15200_dalitz);
@@ -426,18 +451,18 @@ int main(int argc, char **argv) {
 
     if (selected_channel == 50)
     {
-	makeStaticData()->AddDecay("Lambda(1405)z -->  Lambda + dilepton", "Lambda1405z", "Lambda, dilepton", 0.0085 / 137. );
-	PResonanceDalitz * newmodel = new PResonanceDalitz("Lambda1405z_dalitz@Lambda1405z_to_Lambda_dilepton",
-			"dgdm from Zetenyi/Wolf", -1);
-	newmodel->setGm(0.719);
-	makeDistributionManager()->Add(newmodel);
+        makeStaticData()->AddDecay("Lambda(1405)z -->  Lambda + dilepton", "Lambda1405z", "Lambda, dilepton", 0.0085 / 137. );
+        PResonanceDalitz * newmodel = new PResonanceDalitz("Lambda1405z_dalitz@Lambda1405z_to_Lambda_dilepton",
+            "dgdm from Zetenyi/Wolf", -1);
+        newmodel->setGm(0.719);
+        makeDistributionManager()->Add(newmodel);
     }
     if (selected_channel == 51)
     {
         makeStaticData()->AddDecay("Lambda(1405)z -->  pi0 + Sigma0", "Lambda1405z", "pi0, Sigma0", 0.33);
-	makeStaticData()->AddDecay("Lambda(1405)z -->  pi+ + Sigma0", "Lambda1405z", "pi+, Sigma-", 0.33);
-	makeStaticData()->AddDecay("Lambda(1405)z -->  pi- + Sigma0", "Lambda1405z", "pi-, Sigma+", 0.33);
-	makeStaticData()->AddDecay("Lambda(1405)z -->  gamma + Lambda", "Lambda1405z", "g, Lambda", 0.0085);
+        makeStaticData()->AddDecay("Lambda(1405)z -->  pi+ + Sigma0", "Lambda1405z", "pi+, Sigma-", 0.33);
+        makeStaticData()->AddDecay("Lambda(1405)z -->  pi- + Sigma0", "Lambda1405z", "pi-, Sigma+", 0.33);
+        makeStaticData()->AddDecay("Lambda(1405)z -->  gamma + Lambda", "Lambda1405z", "g, Lambda", 0.0085);
     }
 
     listParticle("Lambda1405z");
@@ -451,17 +476,17 @@ int main(int argc, char **argv) {
 
     if (selected_channel == 52)
     {
-	makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + dilepton", "Sigma1385z", "Lambda, dilepton", 0.0125 / 137. );
-	PResonanceDalitz * newmodel = new PResonanceDalitz("Sigma1385z_dalitz@Sigma1385z_to_Lambda_dilepton",
-			"dgdm from Zetenyi/Wolf", -1);
-	newmodel->setGm(0.719);
-	makeDistributionManager()->Add(newmodel);
+        makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + dilepton", "Sigma1385z", "Lambda, dilepton", 0.0125 / 137. );
+        PResonanceDalitz * newmodel = new PResonanceDalitz("Sigma1385z_dalitz@Sigma1385z_to_Lambda_dilepton",
+            "dgdm from Zetenyi/Wolf", -1);
+        newmodel->setGm(0.719);
+        makeDistributionManager()->Add(newmodel);
     }
     if (selected_channel == 53)
     {
         makeStaticData()->AddDecay("Sigma(1385)z -->  pi0 + Sigma0", "Sigma1385z", "pi0, Sigma0", 0.12/3);
-	makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + pi", "Sigma1385z", "pi0, Lambda", 0.87);
-	makeStaticData()->AddDecay("Sigma(1385)z -->  gamma + Lambda", "Sigma1385z", "g, Lambda", 0.0125);
+        makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + pi", "Sigma1385z", "pi0, Lambda", 0.87);
+        makeStaticData()->AddDecay("Sigma(1385)z -->  gamma + Lambda", "Sigma1385z", "g, Lambda", 0.0125);
     }
 
     listParticle("Sigma1385z");
@@ -490,6 +515,59 @@ int main(int argc, char **argv) {
         PParticle * p_t = new PParticle("p");     //Target proton
         PParticle * q = new PParticle(*p_b + *p_t);
 
+        PDecayManager *p_p = new PDecayManager;
+        PDecayChannel *c = new PDecayChannel;
+
+        size_t sta = 0;
+        PartChain p_c;
+        Particles parts = parse_reaction(particles, sta, string::npos, p_c);
+
+        size_t n_in_decay = parts.size();
+        PParticle ** pp = new PParticle*[n_in_decay+1];
+        pp[0] = q;
+        for (uint i = 0; i < n_in_decay; ++i)
+            pp[i+1] = (PParticle *)parts[i];
+        PChannel * channel = new PChannel(pp, n_in_decay);
+        p_c.push_front(channel);
+
+//    print_pc(p_c);
+
+        int size = p_c.size();
+        PChannel ** channels = new PChannel*[size];
+        PartChain::const_iterator it = p_c.begin();
+        int i = 0;
+        for (; it != p_c.end(); ++it)
+        {
+            channels[i++] = (PChannel *) *it;
+        }
+
+        PParticle * _dp = new PParticle("D+");
+        PParticle * _dp_dl = new PParticle("dilepton");
+        PParticle * _dp_p = new PParticle("p");
+//        Particle * _dp_decay[] = {_dp, _dp_dl, _dp_p};
+
+        PParticle * _dp_dl_em = new PParticle("e-");
+        PParticle * _dp_dl_ep = new PParticle("e+");
+//        PParticle * _dp_dl_decay[] = {_dp_dl, _dp_dl_ep, _dp_dl_em};
+
+        PParticle * _p = new PParticle("p");
+        PParticle * _pip = new PParticle("pi+");
+        PParticle * _pim = new PParticle("pi-");
+
+        PParticle * s1[] = { q, _dp, _p, _pip, _pim };
+        PParticle * s2[] = { _dp, _dp_dl, _dp_p };
+        PParticle * s3[] = { _dp_dl, _dp_dl_em, _dp_dl_ep };
+
+        PChannel * c1 = new PChannel(s1, 4);
+        PChannel * c2 = new PChannel(s2, 2);
+        PChannel * c3 = new PChannel(s3, 2);
+
+        PChannel * c0[] = {c1, c2, c3};
+//        PChannel * c0[] = { c1 };
+
+//    PParticle * channels[] = {(PParticle *)_dp_decay, _p, _pip, _pim};
+
+    /*
         int size = tokens.size();
         PParticle ** channels = new PParticle*[size];
         for (int i = 0; i < size; ++i)
@@ -497,49 +575,55 @@ int main(int argc, char **argv) {
             channels[i] = new PParticle(tokens[i].c_str());
             printf("+++ channel: %s\n", tokens[i].c_str());
         }
+    */
 
-        PDecayManager *p_p = new PDecayManager;
-        PDecayChannel *c = new PDecayChannel;
+        p_p->SetDefault((char *)"Lambda1405");
+        p_p->SetDefault((char *)"Sigma1385+");
+        p_p->SetDefault((char *)"Sigma1385-");
+        p_p->SetDefault((char *)"Sigma13850");
+        p_p->SetDefault((char *)"Lambda15200");
+        p_p->SetDefault((char *)"Lambda1405z");
+        p_p->SetDefault((char *)"Sigma1385z");
+        p_p->SetDefault((char *)"D++");
+        p_p->SetDefault((char *)"D+");
+        p_p->SetDefault((char *)"D-");
+        p_p->SetDefault((char *)"D0");
+        p_p->SetDefault((char *)"rho-");
+        p_p->SetDefault((char *)"rho+");
+        p_p->SetDefault((char *)"rho0");
+        p_p->SetDefault((char *)"NP110");
+        p_p->SetDefault((char *)"ND130");
+        p_p->SetDefault((char *)"NS110");
+        p_p->SetDefault((char *)"NP11+");
+        p_p->SetDefault((char *)"ND13+");
+        p_p->SetDefault((char *)"NS11+");
+        p_p->SetDefault((char *)"w");
+        p_p->SetDefault((char *)"eta'");
+        p_p->SetDefault((char *)"dimuon");
+        p_p->SetDefault((char *)"dilepton");
+        p_p->SetDefault((char *)"phi");
+//        p_p->SetDefault((char *)"K0*896");
+        p_p->SetDefault((char *)"Delta2050++");
 
-        p_p->SetDefault("Lambda1405");
-        p_p->SetDefault("Sigma1385+");
-        p_p->SetDefault("Sigma1385-");
-        p_p->SetDefault("Sigma13850");
-        p_p->SetDefault("Lambda15200");
-        p_p->SetDefault("Lambda1405z");
-        p_p->SetDefault("Sigma1385z");
-        p_p->SetDefault("D++");
-        p_p->SetDefault("D+");
-        p_p->SetDefault("D-");
-        p_p->SetDefault("D0");
-        p_p->SetDefault("rho-");
-        p_p->SetDefault("rho+");
-        p_p->SetDefault("rho0");
-        p_p->SetDefault("NP110");
-        p_p->SetDefault("ND130");
-        p_p->SetDefault("NS110");
-        p_p->SetDefault("NP11+");
-        p_p->SetDefault("ND13+");
-        p_p->SetDefault("NS11+");
-        p_p->SetDefault("w");
-        p_p->SetDefault("eta'");
-        p_p->SetDefault("dimuon");
-        p_p->SetDefault("dilepton");
-        p_p->SetDefault("phi");
-//        p_p->SetDefault("K0*896");
-        p_p->SetDefault("Delta2050++");
+//    width = 1.0;
+        //c->AddChannel(width,size,channels);
+//    c->AddChannel(1.0, 4, s1);
+///    c->AddChannel(1.0, 2, s2);
 
-        c->AddChannel(width,size,channels);
-//        parse_reaction(particles, 0, string::npos, c);
+//    PReaction my_reaction(c0, 3, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
+        PReaction my_reaction(channels, 3, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
 
+//        my_reaction.Print();
+        my_reaction.loop(par_events);
 
-        p_p->InitReaction(q,c);              // initialize the reaction
+/*      p_p->InitReaction(q,c);              // initialize the reaction
 
         p_p->loop(
                 par_scale > 0 ? par_scale * crosssection : par_events,
                 0,
                 const_cast<char *>(tmpname.c_str()), 0, 0, 0, 1, 1
                 );
+*/
 #else
 
         char str_en[20];
@@ -556,6 +640,7 @@ int main(int argc, char **argv) {
 #endif
     }
 
+    printf("Generator finished its job, good bye!\n");
     return 0;
 }
 #endif

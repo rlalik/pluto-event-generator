@@ -48,9 +48,13 @@
 51    1.0   1.0         p,K+,Lambda(1405)z
 52    1.0   1.0         p,K+,Sigma(1385)z
 53    1.0   1.0         p,K+,Sigma(1385)z
-@
-
 @ above: approx. 3% dacay into Lambda+2Pi0
+@
+@ Delta dalitz
+55    1.0   1.0         D+[dilepton[e+,e-],p],p,pi+,pi-
+56    1.0   1.0         D0[dilepton[e+,e-],n],p,pi+,pi+,pi-
+59    1.0   1.0         D+[dilepton[e+,e-],p],p,pi+,pi-
+
 
 @ Sigma0
 60    1.0   27.0        p,Sigma0,K+
