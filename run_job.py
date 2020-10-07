@@ -11,7 +11,7 @@ def_script='job_script.sh'
 
 parser=argparse.ArgumentParser(description='Submit jobs to GSI batch farm')
 parser.add_argument('arguments', help='list of arguments', type=str, nargs='+')
-parser.add_argument('-a', '--array', help='send as array job', nargs='?', default=False)
+parser.add_argument('-a', '--array', help='send as array job', nargs='?', default=None)
 parser.add_argument('-p', '--part', help='partition', type=str, default="main")
 parser.add_argument('-f', '--file', help='input is single file', action='store_true', default=False)
 parser.add_argument('-e', '--events', help='number of events per file to be processed',type=int, default=def_events)
@@ -41,7 +41,7 @@ if __name__=="__main__":
     if args.file is True:
         f = open(args.arguments[0])
         lines = f.readlines()
-        print(lines)
+#        print(lines)
         f.close()
     else:
         lines = args.arguments
@@ -59,23 +59,30 @@ if __name__=="__main__":
 
     for entry in lines:
         entry = entry.strip()
-        print(entry)
-
         events = args.events
-
-        print('submitting file: ', entry)
 
         chan=""
         seed=0
+        array_beg = None
+        array_end = None
 
         a = entry.split(':')
         if len(a) >= 1:
-            chan = a[0]
+            chan = int(a[0])
         if len(a) >= 2:
-            seed = int(a[1])
+            seed = int(a[1]) if a[1] is not "" else 0
+        if len(a) >= 4:
+            array_beg = int(a[2])
+            array_end = int(a[3])
+        if array_args == "" and array_beg is not None and array_end is not None:
+            _array_args = "--array={:d}:{:d}".format(array_beg, array_end)
+        else:
+            _array_args = array_args
 
-        job_name = "{:s}_{:d}".format(chan,i)
-        command = "{:s} -o {:s} {:s} -J {:s} --export=\"pattern={:s},seed={:d},events={:d},energy={:f},odir={:s}\" {:s}".format(array_args, logfile, resources, job_name, chan, seed, events, args.energy, args.directory, jobscript)
+        print('Submitting channel: {:d}  seed: {:d}  array: {:s} '.format(chan, seed, _array_args))
+
+        job_name = "{:d}_{:d}".format(chan,i)
+        command = "{:s} -o {:s} {:s} -J {:s} --export=\"pattern={:d},seed={:d},events={:d},energy={:f},odir={:s}\" {:s}".format(_array_args, logfile, resources, job_name, chan, seed, events, args.energy, args.directory, jobscript)
         command += " " + jobscript
 
         job_command='sbatch ' + command + ' -vvv'
@@ -92,6 +99,7 @@ if __name__=="__main__":
                 print(err)
         else:
             pass
+        print("")
 
     print(i, ' entries submitted')
     print('last submitted entry: ', entry)
