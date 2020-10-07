@@ -2,14 +2,20 @@
 
 date
 
-. /lustre/nyx/hades/user/rlalik/hades/pp45/profile.sh
-. /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen/pluto_profile.sh
+if [[ -n ${SLURM_ARRAY_TASK_ID} ]]; then
+    echo "ARRAY"
+    file=$(($seed + ${SLURM_ARRAY_TASK_ID}))
+else
+    echo "NO ARRAY"
+    file=$seed
+fi
+
+. /lustre/hades/user/rlalik/hades/pp45/profile.sh
+. /lustre/hades/user/rlalik/hades/pp45/sim/pluto_gen/pluto_profile.sh
 
 echo channel=$pattern
-echo offset=$offset
-echo loops=$loops
 echo events=$events
-echo seed=$seed
+echo seed=$file
 echo energy=$energy
 
 #var1=$(echo $STR | cut -f1 -d:)
@@ -18,8 +24,8 @@ echo energy=$energy
 
 root -b -q
 
-cd /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen
+cd /lustre/hades/user/rlalik/hades/pp45/sim/pluto_gen
 
 date
 
-time /lustre/nyx/hades/user/rlalik/hades/pp45/sim/pluto_gen/PlutoGen $pattern -e $events -f $offset -l $loops -s $seed -o output -E $energy
+time /lustre/hades/user/rlalik/hades/pp45/sim/pluto_gen/PlutoGen $pattern -e $events -s $file -l 1 -o $odir -E $energy

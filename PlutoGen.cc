@@ -186,7 +186,6 @@ int main(int argc, char **argv) {
     int par_random_seed = 0;
     int par_events = 10000;
     int par_loops = 1;
-    int par_loop_offset = 0;
     int par_scale = 0;
     int par_seed = 0;
     Float_t Eb = 4.5;         // beam energy in AGeV
@@ -203,7 +202,6 @@ int main(int argc, char **argv) {
         {"database",    required_argument,  0,                'd'},
         {"events",      required_argument,  0,                'e'},
         {"loops",       required_argument,  0,                'l'},
-        {"offset",      required_argument,  0,                'f'},
         {"output",      required_argument,  0,                'o'},
         {"scale",       required_argument,  0,                'x'},
         {"seed",        required_argument,  0,                's'},
@@ -215,7 +213,7 @@ int main(int argc, char **argv) {
     while (1) {
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "E:hd:e:f:l:o:x:s:", long_options, &option_index);
+        c = getopt_long(argc, argv, "E:hd:e:l:o:x:s:", long_options, &option_index);
         if (c == -1)
             break;
 
@@ -236,9 +234,6 @@ int main(int argc, char **argv) {
                 break;
             case 'e':
                 par_events = atoi(optarg);
-                break;
-            case 'f':
-                par_loop_offset = atoi(optarg);
                 break;
             case 'l':
                 par_loops = atoi(optarg);
@@ -493,17 +488,17 @@ int main(int argc, char **argv) {
 
     printf("******************* selected channel: %d ***************************\n", selected_channel);
 
-    for (int l = par_loop_offset; l < par_loop_offset+par_loops; ++l)
+    for (int l = par_seed; l < par_seed+par_loops; ++l)
     {
-        PUtils::SetSeed(l+par_seed);
+        PUtils::SetSeed(l);
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         char buff[200];
         if (par_output.length())
-            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%04d", par_output.c_str(), channel, par_events, l+par_seed);
+            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%04d", par_output.c_str(), channel, par_events, l);
         else
-            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%04d", channel, par_events, l+par_seed);
+            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%04d", channel, par_events, l);
 
         std::string tmpname = buff;
 
@@ -540,7 +535,7 @@ int main(int argc, char **argv) {
         {
             channels[i++] = (PChannel *) *it;
         }
-
+/*
         PParticle * _dp = new PParticle("D+");
         PParticle * _dp_dl = new PParticle("dilepton");
         PParticle * _dp_p = new PParticle("p");
@@ -566,7 +561,7 @@ int main(int argc, char **argv) {
 //        PChannel * c0[] = { c1 };
 
 //    PParticle * channels[] = {(PParticle *)_dp_decay, _p, _pip, _pim};
-
+*/
     /*
         int size = tokens.size();
         PParticle ** channels = new PParticle*[size];
@@ -611,8 +606,9 @@ int main(int argc, char **argv) {
 ///    c->AddChannel(1.0, 2, s2);
 
 //    PReaction my_reaction(c0, 3, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
-        PReaction my_reaction(channels, 3, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
+        PReaction my_reaction(channels, i/*was 3*/, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
 
+//        my_reaction.Print();
 //        my_reaction.Print();
         my_reaction.loop(par_events);
 
