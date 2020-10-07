@@ -32,6 +32,15 @@
 25    1.0   10.1        n,Lambda,K+,pi+,pi+,pi-
 26    1.0   13.0        n,Lambda,K0S,pi+,pi+,pi+,pi-
 
+@ Lambda1115
+31    1.0   60.0        p,Lambda,K0L,pi+
+32    1.0   29.6        n,Lambda,K0L,pi+,pi+
+33    1.0   6.2         p,Lambda,K0L,pi+,pi+,pi-
+34    1.0   13.0        n,Lambda,K0L,pi+,pi+,pi+,pi-
+35    1.0   17.0        p,Lambda,K0L,pi+,pi0
+36    1.0   7.0         p,Lambda,K0L,pi+,pi0,pi0
+37    1.0   34.0        p,Lambda,K0L,pi+,pi+,pi-,pi0
+
 @ Lambda1115 and di-lepton source
 40    1.0   43.0        p,Lambda,K+,pi0
 41    1.0   17.0        p,Lambda,K0S,pi+,pi0
@@ -63,12 +72,21 @@
 63    1.0   13.7        p,Sigma0,K+,pi+,pi-
 64    1.0   6.6         n,Sigma0,K0S,pi+,pi+
 
+65    1.0   18.0        p,Sigma0,K0L
+66    1.0   18.0        p,Sigma0,K0L,pi+
+67    1.0   6.6         n,Sigma0,K0L,pi+,pi+
+68    1.0   6.6         p,Sigma0,K0L,pi+,pi0
+
 @ Sigma-
 70    1.0   22.0        p,Sigma-,K+,pi+,pi0
 71    1.0   13.0        p,Sigma-,K0S,pi+,pi+,pi0
+76    1.0   13.0        p,Sigma-,K0L,pi+,pi+,pi0
 
 @ Sigma+
 80    1.0   10.5        p,Sigma+,K0S,pi+,pi-
+85    1.0   10.5        p,Sigma+,K0L,pi+,pi-
+86    1.0   10.5        p,Sigma+,K0L
+87    1.0   10.5        p,Sigma+,K0L,pi0
 
 @ Ksi
 90    1.0   1.0         Xi-,K+,K+,p
@@ -81,3 +99,5 @@
 103   1.0   5.4         p,n,K0S,K+,pi+,pi-
 104   1.0   6.3         p,p,K0S,K0S,pi+,pi-
 105   1.0   36.0        p,n,K0S,K0S,pi+,pi+,pi-
+110   1.0   6.4         p,p,K0S,K0L
+120   1.0   1.0         p,p,K+,K-
