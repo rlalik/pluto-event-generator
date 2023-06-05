@@ -416,22 +416,22 @@ int main(int argc, char **argv) {
 
     if (selected_channel == 49)
     {
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0", "Lambda15200", "Sigma0, pi0", .139096);
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0 + pi0", "Lambda15200", "Sigma0, pi0, pi0", .009/5.0);
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi+ + pi-", "Lambda15200", "Sigma0, pi+, pi-", .009/5.0);
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi0 + pi0", "Lambda15200", "Lambda, pi0, pi0", .1/3.0);
+        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0", "Lambda15200", "Sigma0, pi0", .139096); // -
+        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0 + pi0", "Lambda15200", "Sigma0, pi0, pi0", .009/5.0); // -
+        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi+ + pi-", "Lambda15200", "Sigma0, pi+, pi-", .009/5.0); // -
+        makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi0 + pi0", "Lambda15200", "Lambda, pi0, pi0", .1/3.0); // -
         makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + g", "Lambda15200", "Lambda, g", .0085);
     }
     listParticle("Lambda15200");
 
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 );  
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 );   
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 ); +
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 ); +
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma+ + pi-", "Lambda15200", "Sigma+, pi-", .139096);
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma- + pi+", "Lambda15200", "Sigma-, pi+", .139096);
 
-//  makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + g", "Lambda15200", "Sigma0, g", .019373);
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi+ + pi-", "Lambda15200", "Lambda, pi+, pi-", .014638);
-//00.9    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + g", "Lambda15200", "Sigma0, g", .019373);
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi+ + pi-", "Lambda15200", "Lambda, pi+, pi-", .014638); + BR 0.2/3
+//    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
 
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)+ + pi-", "Lambda15200", "Sigma1385+, pi-", .028780);
 //    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)- + pi+", "Lambda15200", "Sigma1385-, pi+", .028780);
