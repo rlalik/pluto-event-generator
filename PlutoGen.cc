@@ -1,36 +1,18 @@
-#ifndef __CINT__
-
-#include <PParticle.h>
-#include <PData.h>
-#include <PStaticData.h>
-#include <PChannel.h>
-#include <PFireball.h>
-#include <PReaction.h>
 #include <PDecayChannel.h>
 #include <PDecayManager.h>
-#include <PUtils.h>
-#include <PFileInput.h>
-#include <PFilter.h>
-#include <PKinematics.h>
-#include <PResonanceDalitz.h>
-#include <TApplication.h>
+#include <PParticle.h>
+#include <plugins/PStrangenessPlugin.h>
 
-#include <TROOT.h>
-
-#endif
-
-#define PR(x) std::cout << "++DEBUG: " << #x << " = |" << x << "| (" << __FILE__ << ", " << __LINE__ << ")\n";
-
-#include <list>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <fstream>
 #include <cstdlib>
-#include <iomanip>
+#include <cstdio>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <getopt.h>
-
 
 //#define NSTARS 1        // define custom Nstar resonances
 #define LOOP_DEF 1
@@ -95,199 +77,189 @@ static inline std::string & clear_chars(std::string &str, char s)
     return str;
 }
 
-bool find_decay(const std::string line, size_t spos, size_t epos, size_t & dspos)
+constexpr auto max_decays = 7;
+constexpr const char * decay_product[max_decays] = { "d1", "d2", "d3", "d4", "d5", "d6", "d7" };
+
+/// Get particle and generate list of all decay channels. If the decay channel contains value from allowed_decays,
+/// then go recursively there.
+/// @param mother_name mother paticle name, must be the name not alias TODO
+/// @param allowed_decays string of allowed decays to be recursively parsed,
+///        must be in form of list of ':' surrounded names, e.g.g ":part1:part2:...:"
+/// @param pdm decay manager to add the decay channels
+auto build_recursive_decay(const char * mother_name, const TString & allowed_decays, PDecayManager *pdm) -> void
 {
-    printf("  +++   find decay: %s\n", line.substr(spos, string::npos).c_str());
-    dspos = line.find('[', spos);
-    if (dspos < epos)
+    auto mother_key = makeStaticData()->GetParticleKey(mother_name);
+
+    PDecayChannel * decay_channels = new PDecayChannel();
+
+    int decay_key = -1;
+    while (makeDataBase()->MakeListIterator(mother_key, "pnmodes", "link", &decay_key)) {
+        auto decay_idx = makeStaticData()->GetDecayIdxByKey(decay_key);
+        auto decay_nparts = makeStaticData()->GetDecayNProducts(decay_idx);
+
+        const char *result_name = 0;
+        if(!makeDataBase()->GetParamString(decay_key, makeDataBase()->GetParamString("name"), &result_name)) { abort(); }
+
+        const char ** decay_channel_ids = new const char*[decay_nparts];
+        if (!decay_nparts) { return; }
+
+        for (int i = 0; i < decay_nparts; ++i) {
+            int * decay_particle;
+            const char *result_name = 0;
+            // const char *result_alias = 0; TODO
+
+            if (!makeDataBase()->GetParamInt(decay_key, makeDataBase()->GetParamInt(decay_product[i]), &decay_particle)) { abort(); }
+            if (!makeDataBase()->GetParamString(*decay_particle, makeDataBase()->GetParamString("name"), &result_name)) { abort(); }
+            // if (!makeDataBase()->GetParamString(*decay_particle, makeDataBase()->GetParamString("lalias"), &result_alias)) { }
+
+            decay_channel_ids[i] = result_name;
+
+            TString children = TString::Format(":%s:", result_name);
+            if (allowed_decays.Contains(children)) { build_recursive_decay(result_name, allowed_decays, pdm); }
+        }
+
+        double * result_br = nullptr;
+        if (!makeDataBase()->GetParamDouble(decay_key, makeDataBase()->GetParamDouble("br"), &result_br)) { abort(); }
+        decay_channels->AddChannel(*result_br, decay_nparts, decay_channel_ids);
+    }
+
+    pdm->AddChannel(mother_name, decay_channels);
+}
+
+/// Check if the string contains decay marker on the next position
+bool check_decay_start(const std::string line, size_t position)
+{
+    if (position != string::npos and line[position] == '[')
         return true;
 
     return false;
 }
 
-typedef std::list<PChannel *> PartChain;
-typedef std::vector<PParticle *> Particles;
-/*
-void print_pc(const PartChain p_c)
+bool check_decay_stop(const std::string line, size_t position)
 {
-    printf("###(%d) -> ", p_c.size());
-    for (int i = 0; i < p_c.size(); ++i)
-         printf("%s ", ((PParticle *)p_c[i])->Name() );
-    printf("\n");
+    if (position != string::npos and line[position] == ']')
+        return true;
+
+    return false;
 }
 
-void print_p(PParticle ** p_c, int n)
+bool check_separator(const std::string line, size_t position)
 {
-    printf("+++(%d) -> ", n);
-    for (int i = 0; i < n; ++i)
-         printf("%s ", ((PParticle *)p_c[i])->Name() );
-    printf("\n");
+    if (position != string::npos and line[position] == ',')
+        return true;
+
+    return false;
 }
-*/
-Particles parse_reaction(const std::string line, size_t & spos, size_t epos, PartChain & p_c)
+
+auto parse_reaction(const std::string line, const std::string & mother, size_t & current_stop, PDecayManager *pdm,  int level = 0) -> PDecayChannel*
 {
-    Particles parts;
+    printf("\n");
+    // printf("Line to parse: %s starting from %lu\n               ", line.c_str(), current_stop);
+    // for (int i = 0; i < line.length(); ++i) { if (i % 5 == 0) printf("|"); else printf("."); } printf("\n");
+    std::vector<std::string> particles_list;
 
-    static int level = 0;
-    ++level;
-    //printf("+++%d parse string: %s\n", level, line.substr(spos, epos).c_str());
-    size_t & next_stop = spos;
-    size_t this_stop = spos;
-    size_t decay_start = 0;
-    size_t decay_stop = 0;
-
-    while (next_stop != epos and next_stop != string::npos)
+    while (current_stop != string::npos)
     {
-        next_stop = line.find_first_of(",]", this_stop);
+        printf("[%d] Parsing string: '%s'\n", level, line.c_str() + current_stop);
 
-        bool ret = find_decay(line, this_stop, next_stop, decay_start);
-        //printf("        decay result = %d in %lu-%lu\n", ret, decay_start, decay_stop);
-        if (ret == true)
+        // If decay_range closing marker, return from the leve
+        if (check_decay_stop(line, current_stop))
         {
-            std::string c_name = line.substr(this_stop, decay_start-this_stop).c_str();
+            if (level == 0) { abort(); }
+            current_stop++;
+            printf("End of parsing level %d\n", level);
+            break;
+        }
 
-            next_stop = decay_start+1;
-            Particles _parts = parse_reaction(line, next_stop, decay_stop-2, p_c);
+        auto next_stop = line.find_first_of(",[]", current_stop);
 
-            //printf("after %s\n", c_name.c_str());
-            size_t n_in_decay = _parts.size();
-            PParticle ** pp = new PParticle*[n_in_decay+1];
-            pp[0] = new PParticle(c_name.c_str());
-            //pp[0]->Print();
-            for (uint i = 0; i < n_in_decay; ++i)
-            {
-                pp[i+1] = (PParticle *)_parts[i];
-                //pp[i+1]->Print();
-            }
-            PChannel * channel = new PChannel(pp, n_in_decay);
-            p_c.push_front(channel);
-            parts.push_back(pp[0]);
+        // Get the particle
+        std::string particle_name = line.substr(current_stop, next_stop-current_stop);
+        printf("[%d] *** Particle name is '%s', current stop: %lu  next stop: %lu\n\n", level, particle_name.c_str(), current_stop, next_stop);
+
+        // Check if this is decay command, abort if decay at level 0 -- forbidden!
+        // If not decay, add it to he list
+        if (strncmp(particle_name.c_str(), "decay", 5) == 0) {
+            if (level == 0) { abort(); }
+
+            printf("[%d] Entering decay mode\n", level);
+            auto decay_stop = line.find_first_of(",[]", current_stop);
+            auto decay_string = line.substr(current_stop, decay_stop - current_stop);
+            build_recursive_decay(mother.c_str(), decay_string.c_str()+5, pdm);
+            current_stop = next_stop + 1;
+            return nullptr;
         }
         else
         {
-            std::string c_name = line.substr(this_stop, next_stop-this_stop);
-            //printf("+++ found particle: %s\n", line.substr(this_stop, next_stop-this_stop).c_str());
-            PParticle * p = new PParticle(c_name.c_str());
-            parts.push_back(p);
+            particles_list.push_back(particle_name);
         }
-        if (next_stop >= line.length()) { spos = string::npos; return parts; }
 
-        this_stop = next_stop + 1;
-        if (line[next_stop] == ']') { spos = this_stop; return parts; }
+        // If the particle is followed by the decay marker, do recursive decay parsing
+        // This is executed when the decay marker '[' is found
+        if (check_decay_start(line, next_stop))
+        {
+            current_stop = next_stop+1;
+            parse_reaction(line, particle_name,  current_stop, pdm, level+1);
+
+            printf("[%d] Back at level -- current stop: %lu next stop: %lu\n", level, current_stop, next_stop);
+            if (line[current_stop] == ',') { current_stop++; }
+            next_stop = current_stop;
+        }
+
+        if (check_separator(line, next_stop))
+        {
+            current_stop = next_stop + 1;
+        }
+        else
+        {
+            current_stop = next_stop;
+        }
+
+        if (next_stop >= line.length()) { current_stop = string::npos; }
     }
 
-    --level;
-    return parts;
+    printf("[%d] FILL DECAY CHANNELS\n", level);
+    PDecayChannel * decay_channels = new PDecayChannel();
+    const char ** decay_channel_ids = new const char*[particles_list.size()];
+    int idx = 0;
+    for (const auto & part : particles_list) {
+        decay_channel_ids[idx++] = part.c_str();
+        printf("   part = %s\n", part.c_str());
+    }
+    decay_channels->AddChannel(1.0, idx, decay_channel_ids);
+
+    if (mother.length() > 0) {
+        pdm->AddChannel(mother.c_str(), decay_channels);
+    }
+
+    return decay_channels;
 }
 
-#ifndef __CINT__
-int main(int argc, char **argv) {
-    int verbose_flag = 0;
-    int par_random_seed = 0;
-    int par_events = 10000;
-    int par_loops = 1;
-    int par_scale = 0;
-    int par_seed = 0;
-    Float_t Eb = 4.5;         // beam energy in AGeV
-
-    std::string par_database = "ChannelsDatabase.txt";
-    std::string par_output = "";
-
-    struct option long_options[] =
-    {
-        {"verbose",     no_argument,        &verbose_flag,    1},
-        {"brief",       no_argument,        &verbose_flag,    0},
-        {"random-seed", no_argument,        &par_random_seed, 1},
-        {"energy",      required_argument,  0,                'E'},
-        {"database",    required_argument,  0,                'd'},
-        {"events",      required_argument,  0,                'e'},
-        {"loops",       required_argument,  0,                'l'},
-        {"output",      required_argument,  0,                'o'},
-        {"scale",       required_argument,  0,                'x'},
-        {"seed",        required_argument,  0,                's'},
-        {"help",        no_argument,        0,                'h'},
-        { 0, 0, 0, 0 }
-    };
-
-    Int_t c = 0;
-    while (1) {
-        int option_index = 0;
-
-        c = getopt_long(argc, argv, "E:hd:e:l:o:x:s:", long_options, &option_index);
-        if (c == -1)
-            break;
-
-        switch (c) {
-            case 0:
-                if (long_options[option_index].flag != 0)
-                    break;
-                printf ("option %s", long_options[option_index].name);
-                if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
-                break;
-            case 'E':
-                Eb = atof(optarg);
-                break;
-            case 'd':
-                par_database = optarg;
-                break;
-            case 'e':
-                par_events = atoi(optarg);
-                break;
-            case 'l':
-                par_loops = atoi(optarg);
-                break;
-            case 'o':
-                par_output = optarg;
-                break;
-            case 'x':
-                par_scale = atoi(optarg);
-                break;
-            case 's':
-                par_seed = atoi(optarg);
-                break;
-            case 'h':
-//                 Usage();
-                exit(EXIT_SUCCESS);
-                break;
-            case '?':
-//                 abort();
-                break;
-            default:
-                break;
-        }
-    }
-
-    if (optind == argc) {
-        std::cerr << "No channel given! Exiting..." << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    int selected_channel = 0;
-    while (optind < argc) {
-        selected_channel = atoi(argv[optind++]);
-        break;
-    }
-
-    std::vector<std::string> tokens;
-
-    int channel;
+struct channel_data {
+    int id;
     float width;
     float crosssection;
     std::string particles;
-    std::string comment;
+};
 
-    std::ifstream ofs(par_database.c_str(), std::ios::in);
 
-    bool has_data = false;
+
+auto load_database(const char * dbfile) -> std::unordered_map<int, channel_data> {
+    std::unordered_map<int, channel_data> channels;
+
+    std::ifstream ofs(dbfile, std::ios::in);
 
     if (ofs.is_open()) {
         std::string line;
         while (std::getline(ofs, line)) {
             if (line[0] == '@')
                 continue;
-            tokens.clear();
+
+            int channel;
+            float width;
+            float crosssection;
+            std::string particles;
+            std::string comment;
 
             std::istringstream iss(line);
             iss >> channel >> width >> crosssection >> particles;
@@ -299,28 +271,23 @@ int main(int argc, char **argv) {
             clear_chars(_parts, '[');
             clear_chars(_parts, ']');
 
-            tokens = split(_parts, ',');
-
-            if (channel == selected_channel) {
-                has_data = true;
-                break;
-            }
+            channel_data chd = { channel, width, crosssection, particles };
+            channels[channel] = std::move(chd);
         }
-    } else {
-        std::cerr << "Database " << par_database << " can not be open! Exiting..." << std::endl;
+    }
+    else
+    {
+        std::cerr << "Database " << dbfile << " can not be open! Exiting..." << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
-    if (!has_data) {
-        std::cerr << "No data for given channel " << selected_channel << "! Exiting..." << std::endl;
-        std::exit(EXIT_FAILURE);
-    }
+    return channels;
+}
 
-    int pid_resonance = 0;
-    int decay_index = 0;
-
-#ifdef NSTARS
-#ifdef LOOP_DEF
+auto init_nstar() -> void
+{
+    #ifdef NSTARS
+    #ifdef LOOP_DEF
     const int nstar_cnt = 8;
 
     int nstar_num[nstar_cnt] = { 1650, 1710, 1720, 1875, 1880, 1895, 1900, 2190 };
@@ -342,7 +309,7 @@ int main(int argc, char **argv) {
         decay_index = makeStaticData()->AddDecay(res_decay, res_name, "Lambda, K+", 1);
         listParticle(res_name);
     }
-#else
+    #else
 
     {
         pid_resonance = makeStaticData()->AddParticle(-1,"NStar1650",1.650);  //Mass in GeV/c2
@@ -384,121 +351,58 @@ int main(int argc, char **argv) {
         listParticle("NStar2190");
     }
 
-#endif
+    #endif
 
-#endif /* NSTARS */
+    #endif /* NSTARS */
+}
+
+auto run_channel(int channel_id, std::string channel_string, int events, int seed, int loops, float beam_energy, std::string output_dir) -> void
+{
+    // if (!has_data) {
+    //     std::cerr << "No data for given channel " << selected_channel << "! Exiting..." << std::endl;
+    //     std::exit(EXIT_FAILURE);
+    // }
+
+    TString detect_dalitz = channel_string;
+    if (detect_dalitz.Contains("dilepton")) {
+        PStrangenessPlugin::EnableHadronDecays(false);
+        PStrangenessPlugin::EnablePhotonDecays(false);
+    } else {
+        PStrangenessPlugin::EnableDalitzDecays(false);
+    }
 
     makeDistributionManager()->Exec("strangeness:init");
 
-    makeStaticData();
-    int dpp_2050_pid = makeStaticData()->AddParticle(-1, "Delta2050++", 2.05);
-    makeStaticData()->AddAlias("Delta2050++", "Delta(2050)++");
-    makeStaticData()->SetParticleTotalWidth("Delta2050++", 0.25);
-    makeStaticData()->SetParticleBaryon("Delta2050++", 1);
-    makeStaticData()->AddDecay("Delta(2050)++ --> Sigma(1385)+ + K+", "Delta2050++", "Sigma1385+,K+", 1.0);
-    listParticle("Delta2050++");
-
-
-    int l1520_pid = makeStaticData()->AddParticle(-1,"Lambda15200", 1.5195);
-    makeStaticData()->AddAlias("Lambda15200","Lambda(1520)0");
-    makeStaticData()->SetParticleTotalWidth("Lambda15200",0.0156);
-    makeStaticData()->SetParticleBaryon("Lambda15200",1);
-    makeStaticData()->SetParticleSpin("Lambda15200",3);
-    makeStaticData()->SetParticleParity("Lambda15200",1);
-
-    if (selected_channel == 48)
-    {
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
-        PResonanceDalitz * L15200_dalitz = new PResonanceDalitz("Lambda15200_dalitz@Lambda15200_to_Lambda_dilepton","dgdm from Zetenyi/Wolf", -1);
-        L15200_dalitz->setGm(0.719);
-        makeDistributionManager()->Add(L15200_dalitz);
+    auto list_strange = false;
+    if (list_strange) {
+        listParticle("Lambda");
+        listParticle("Sigma0");
+        listParticle("Sigma+");
+        listParticle("Sigma-");
+        listParticle("Xi0");
+        listParticle("Xi-");
+        listParticle("Sigma13850");
+        listParticle("Sigma1385+");
+        listParticle("Sigma1385-");
+        listParticle("Lambda1405");
+        listParticle("Lambda1520");
+        listParticle("Xi15300");
+        listParticle("Xi1530-");
     }
 
-    if (selected_channel == 49)
-    {
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0", "Lambda15200", "Sigma0, pi0", .139096); // -
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi0 + pi0", "Lambda15200", "Sigma0, pi0, pi0", .009/5.0); // -
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + pi+ + pi-", "Lambda15200", "Sigma0, pi+, pi-", .009/5.0); // -
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi0 + pi0", "Lambda15200", "Lambda, pi0, pi0", .1/3.0); // -
-        makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + g", "Lambda15200", "Lambda, g", .0085);
-    }
-    listParticle("Lambda15200");
+    printf("******************* selected channel: %d ***************************\n", channel_id);
 
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> K- + p", "Lambda15200", "K-,p", .223547 ); +
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> K0S + n", "Lambda15200", "K0S,n", .223547 ); +
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma+ + pi-", "Lambda15200", "Sigma+, pi-", .139096);
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma- + pi+", "Lambda15200", "Sigma-, pi+", .139096);
-
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma0 + g", "Lambda15200", "Sigma0, g", .019373);
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + pi+ + pi-", "Lambda15200", "Lambda, pi+, pi-", .014638); + BR 0.2/3
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Lambda + e+ + e-", "Lambda15200", "Lambda, dilepton", .007948/137.);
-
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)+ + pi-", "Lambda15200", "Sigma1385+, pi-", .028780);
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)- + pi+", "Lambda15200", "Sigma1385-, pi+", .028780);
-//    makeStaticData()->AddDecay("Lambda(1520)0 --> Sigma(1385)0 + pi0", "Lambda15200", "Sigma13850, pi0", .028780);
-
-    Int_t pid_lambda1405 = makeStaticData()->AddParticle(-1,"Lambda1405z", 1.405);
-    makeStaticData()->AddAlias("Lambda1405z","Lambda(1405)z");
-    makeStaticData()->SetParticleTotalWidth("Lambda1405z", 0.05);
-    makeStaticData()->SetParticleBaryon("Lambda1405z", 1);
-    makeStaticData()->SetParticleSpin("Lambda1405z", 1);
-    makeStaticData()->SetParticleParity("Lambda1405z", -1);
-
-    if (selected_channel == 50)
-    {
-        makeStaticData()->AddDecay("Lambda(1405)z -->  Lambda + dilepton", "Lambda1405z", "Lambda, dilepton", 0.0085 / 137. );
-        PResonanceDalitz * newmodel = new PResonanceDalitz("Lambda1405z_dalitz@Lambda1405z_to_Lambda_dilepton",
-            "dgdm from Zetenyi/Wolf", -1);
-        newmodel->setGm(0.719);
-        makeDistributionManager()->Add(newmodel);
-    }
-    if (selected_channel == 51)
-    {
-        makeStaticData()->AddDecay("Lambda(1405)z -->  pi0 + Sigma0", "Lambda1405z", "pi0, Sigma0", 0.33);
-        makeStaticData()->AddDecay("Lambda(1405)z -->  pi+ + Sigma0", "Lambda1405z", "pi+, Sigma-", 0.33);
-        makeStaticData()->AddDecay("Lambda(1405)z -->  pi- + Sigma0", "Lambda1405z", "pi-, Sigma+", 0.33);
-        makeStaticData()->AddDecay("Lambda(1405)z -->  gamma + Lambda", "Lambda1405z", "g, Lambda", 0.0085);
-    }
-
-    listParticle("Lambda1405z");
-
-    Int_t pid_Sigma1385 = makeStaticData()->AddParticle(-1,"Sigma1385z", 1.385);
-    makeStaticData()->AddAlias("Sigma1385z","Sigma(1385)z");
-    makeStaticData()->SetParticleTotalWidth("Sigma1385z", 0.0395);
-    makeStaticData()->SetParticleBaryon("Sigma1385z", 1);
-    makeStaticData()->SetParticleSpin("Sigma1385z", 3);
-    makeStaticData()->SetParticleParity("Sigma1385z", 1);
-
-    if (selected_channel == 52)
-    {
-        makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + dilepton", "Sigma1385z", "Lambda, dilepton", 0.0125 / 137. );
-        PResonanceDalitz * newmodel = new PResonanceDalitz("Sigma1385z_dalitz@Sigma1385z_to_Lambda_dilepton",
-            "dgdm from Zetenyi/Wolf", -1);
-        newmodel->setGm(0.719);
-        makeDistributionManager()->Add(newmodel);
-    }
-    if (selected_channel == 53)
-    {
-        makeStaticData()->AddDecay("Sigma(1385)z -->  pi0 + Sigma0", "Sigma1385z", "pi0, Sigma0", 0.12/3);
-        makeStaticData()->AddDecay("Sigma(1385)z -->  Lambda + pi", "Sigma1385z", "pi0, Lambda", 0.87);
-        makeStaticData()->AddDecay("Sigma(1385)z -->  gamma + Lambda", "Sigma1385z", "g, Lambda", 0.0125);
-    }
-
-    listParticle("Sigma1385z");
-
-    printf("******************* selected channel: %d ***************************\n", selected_channel);
-
-    for (int l = par_seed; l < par_seed+par_loops; ++l)
+    for (int l = seed; l < seed+loops; ++l)
     {
         PUtils::SetSeed(l);
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         char buff[200];
-        if (par_output.length())
-            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%04d", par_output.c_str(), channel, par_events, l);
+        if (output_dir.length())
+            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%04d", output_dir.c_str(), channel_id, events, l);
         else
-            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%04d", channel, par_events, l);
+            sprintf(buff, "pluto_chan_%03d_events_%d_seed_%04d", channel_id, events, l);
 
         std::string tmpname = buff;
 
@@ -506,120 +410,19 @@ int main(int argc, char **argv) {
         //Some Particles for the reaction
 
 #ifndef NSTARS
-        PParticle * p_b = new PParticle("p", Eb);  //Beam proton
+        PParticle * p_b = new PParticle("p", beam_energy);  //Beam proton
         PParticle * p_t = new PParticle("p");     //Target proton
         PParticle * q = new PParticle(*p_b + *p_t);
 
-        PDecayManager *p_p = new PDecayManager;
-        PDecayChannel *c = new PDecayChannel;
+        PDecayManager *pdm = new PDecayManager;
 
         size_t sta = 0;
-        PartChain p_c;
-        Particles parts = parse_reaction(particles, sta, string::npos, p_c);
+        auto decay_channels = parse_reaction(channel_string, "", sta, pdm);
 
-        size_t n_in_decay = parts.size();
-        PParticle ** pp = new PParticle*[n_in_decay+1];
-        pp[0] = q;
-        for (uint i = 0; i < n_in_decay; ++i)
-            pp[i+1] = (PParticle *)parts[i];
-        PChannel * channel = new PChannel(pp, n_in_decay);
-        p_c.push_front(channel);
+        pdm->InitReaction(q, decay_channels);
+        pdm->Print();
 
-//    print_pc(p_c);
-
-        int size = p_c.size();
-        PChannel ** channels = new PChannel*[size];
-        PartChain::const_iterator it = p_c.begin();
-        int i = 0;
-        for (; it != p_c.end(); ++it)
-        {
-            channels[i++] = (PChannel *) *it;
-        }
-/*
-        PParticle * _dp = new PParticle("D+");
-        PParticle * _dp_dl = new PParticle("dilepton");
-        PParticle * _dp_p = new PParticle("p");
-//        Particle * _dp_decay[] = {_dp, _dp_dl, _dp_p};
-
-        PParticle * _dp_dl_em = new PParticle("e-");
-        PParticle * _dp_dl_ep = new PParticle("e+");
-//        PParticle * _dp_dl_decay[] = {_dp_dl, _dp_dl_ep, _dp_dl_em};
-
-        PParticle * _p = new PParticle("p");
-        PParticle * _pip = new PParticle("pi+");
-        PParticle * _pim = new PParticle("pi-");
-
-        PParticle * s1[] = { q, _dp, _p, _pip, _pim };
-        PParticle * s2[] = { _dp, _dp_dl, _dp_p };
-        PParticle * s3[] = { _dp_dl, _dp_dl_em, _dp_dl_ep };
-
-        PChannel * c1 = new PChannel(s1, 4);
-        PChannel * c2 = new PChannel(s2, 2);
-        PChannel * c3 = new PChannel(s3, 2);
-
-        PChannel * c0[] = {c1, c2, c3};
-//        PChannel * c0[] = { c1 };
-
-//    PParticle * channels[] = {(PParticle *)_dp_decay, _p, _pip, _pim};
-*/
-    /*
-        int size = tokens.size();
-        PParticle ** channels = new PParticle*[size];
-        for (int i = 0; i < size; ++i)
-        {
-            channels[i] = new PParticle(tokens[i].c_str());
-            printf("+++ channel: %s\n", tokens[i].c_str());
-        }
-    */
-
-        p_p->SetDefault((char *)"Lambda1405");
-        p_p->SetDefault((char *)"Sigma1385+");
-        p_p->SetDefault((char *)"Sigma1385-");
-        p_p->SetDefault((char *)"Sigma13850");
-        p_p->SetDefault((char *)"Lambda15200");
-        p_p->SetDefault((char *)"Lambda1405z");
-        p_p->SetDefault((char *)"Sigma1385z");
-        p_p->SetDefault((char *)"D++");
-        p_p->SetDefault((char *)"D+");
-        p_p->SetDefault((char *)"D-");
-        p_p->SetDefault((char *)"D0");
-        p_p->SetDefault((char *)"rho-");
-        p_p->SetDefault((char *)"rho+");
-        p_p->SetDefault((char *)"rho0");
-        p_p->SetDefault((char *)"NP110");
-        p_p->SetDefault((char *)"ND130");
-        p_p->SetDefault((char *)"NS110");
-        p_p->SetDefault((char *)"NP11+");
-        p_p->SetDefault((char *)"ND13+");
-        p_p->SetDefault((char *)"NS11+");
-        p_p->SetDefault((char *)"w");
-        p_p->SetDefault((char *)"eta'");
-        p_p->SetDefault((char *)"dimuon");
-        p_p->SetDefault((char *)"dilepton");
-        p_p->SetDefault((char *)"phi");
-//        p_p->SetDefault((char *)"K0*896");
-        p_p->SetDefault((char *)"Delta2050++");
-
-//    width = 1.0;
-        //c->AddChannel(width,size,channels);
-//    c->AddChannel(1.0, 4, s1);
-///    c->AddChannel(1.0, 2, s2);
-
-//    PReaction my_reaction(c0, 3, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
-        PReaction my_reaction(channels, i/*was 3*/, 1<<3, 0, const_cast<char *>(tmpname.c_str()) );
-
-//        my_reaction.Print();
-//        my_reaction.Print();
-        my_reaction.loop(par_events);
-
-/*      p_p->InitReaction(q,c);              // initialize the reaction
-
-        p_p->loop(
-                par_scale > 0 ? par_scale * crosssection : par_events,
-                0,
-                const_cast<char *>(tmpname.c_str()), 0, 0, 0, 1, 1
-                );
-*/
+        /*Int_t n = */pdm->loop(events, 0, const_cast<char *>(tmpname.c_str()), 0, 0, 0, 1, 1);
 #else
 
         char str_en[20];
@@ -628,8 +431,6 @@ int main(int argc, char **argv) {
         replace_chars(_part, '@', ' ');
         replace_chars(_part, ',', ' ');
 
-        printf("making reaction: p+p -> %s\n", _part.c_str());
-
         PReaction my_reaction(str_en, "p", "p", const_cast<char *>(_part.c_str()), const_cast<char *>(tmpname.c_str()), 0, 0, 0, 1);
         my_reaction.Print();
         my_reaction.loop(par_events);
@@ -637,6 +438,122 @@ int main(int argc, char **argv) {
     }
 
     printf("Generator finished its job, good bye!\n");
-    return 0;
 }
-#endif
+
+int main(int argc, char **argv) {
+    int verbose_flag = 0;
+    int par_random_seed = 0;
+    int par_events = 10000;
+    int par_loops = 1;
+    int par_scale = 0;
+    int par_seed = 0;
+    int par_query = -1;
+    int list_strange = 0;
+    Float_t Eb = 4.5;         // beam energy in AGeV
+
+    std::string par_database = "ChannelsDatabase.txt";
+    std::string par_output = "";
+
+    struct option long_options[] =
+    {
+        {"verbose",      no_argument,        &verbose_flag,    1},
+        {"brief",        no_argument,        &verbose_flag,    0},
+        {"random-seed",  no_argument,        &par_random_seed, 1},
+        {"list-strange", no_argument,        &list_strange,    1},
+        {"database",     required_argument,  0,                'd'},
+        {"events",       required_argument,  0,                'e'},
+        {"energy",       required_argument,  0,                'E'},
+        {"help",         no_argument,        0,                'h'},
+        {"loops",        required_argument,  0,                'l'},
+        {"output",       required_argument,  0,                'o'},
+        {"query",        required_argument,  0,                'q'},
+        {"seed",         required_argument,  0,                's'},
+        {"scale",        required_argument,  0,                'x'},
+        { 0, 0, 0, 0 }
+    };
+
+    Int_t c = 0;
+    while (1) {
+        int option_index = 0;
+
+        c = getopt_long(argc, argv, "d:e:E:hl:o:q:s:x:", long_options, &option_index);
+        if (c == -1)
+            break;
+
+        switch (c) {
+            case 0:
+                if (long_options[option_index].flag != 0)
+                    break;
+            printf ("option %s", long_options[option_index].name);
+            if (optarg)
+                printf (" with arg %s", optarg);
+            printf ("\n");
+            break;
+            case 'd':
+                par_database = optarg;
+                break;
+            case 'e':
+                par_events = atoi(optarg);
+                break;
+            case 'E':
+                Eb = atof(optarg);
+                break;
+            case 'h':
+                //                 Usage();
+                exit(EXIT_SUCCESS);
+                break;
+            case 'l':
+                par_loops = atoi(optarg);
+                break;
+            case 'o':
+                par_output = optarg;
+                break;
+            case 'q':
+                par_query = atoi(optarg);
+                break;
+            case 's':
+                par_seed = atoi(optarg);
+                break;
+            case 'x':
+                par_scale = atoi(optarg);
+                break;
+            case '?':
+                //                 abort();
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (par_query >= 0) {
+        auto channels = load_database(par_database.c_str());
+
+        const auto chit = channels.find(par_query);
+        if (chit != channels.end()) {
+            printf("%s\n", chit->second.particles.c_str());
+            exit(EXIT_SUCCESS);
+        }
+
+        exit(EXIT_FAILURE);
+    }
+
+    if (optind == argc) {
+        std::cerr << "No channel given! Exiting..." << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    auto channels = load_database(par_database.c_str());
+
+    while (optind < argc) {
+        auto selected_channel = atoi(argv[optind++]);
+        const auto chit = channels.find(selected_channel);
+        if (chit == channels.end()) {
+            printf("Channel %d is missing\n", selected_channel);
+            exit(EXIT_FAILURE);
+        }
+
+        run_channel(selected_channel, chit->second.particles, par_events, par_seed, par_loops, Eb, par_output);
+    }
+
+    exit(EXIT_SUCCESS);
+}
