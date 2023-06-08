@@ -218,6 +218,8 @@
 
   520   1.0     1.0     p,K+,Lambda(1520)[Lambda,dilepton[e+,e-]]
   521   1.0     1.0     p,K+,Lambda(1520)[decay:Sigma13850:Lambda1405:]
+  522   1.0     1.0     p,K+,Lambda(1520)[Lambda,pi+,pi-]
+  523   1.0     1.0     p,K+,Lambda(1520)[Lambda,pi0,pi0]
 
   530   1.0     1.0     p,K+,Xi(1530)0[Lambda,dilepton[e+,e-]]
   531   1.0     1.0     p,K+,Xi(1530)0[decay]

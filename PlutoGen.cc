@@ -441,12 +441,12 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
     -> void
 {
     TString detect_dalitz = channel_string;
-    if (detect_dalitz.Contains("dilepton"))
-    {
-        PStrangenessPlugin::EnableHadronDecays(false);
-        PStrangenessPlugin::EnablePhotonDecays(false);
-    }
-    else { PStrangenessPlugin::EnableDalitzDecays(false); }
+    // if (detect_dalitz.Contains("dilepton"))
+    // {
+    //     PStrangenessPlugin::EnableHadronDecays(false);
+    //     PStrangenessPlugin::EnablePhotonDecays(false);
+    // }
+    // else { PStrangenessPlugin::EnableDalitzDecays(false); }
 
     makeDistributionManager()->Exec("strangeness:init");
 
