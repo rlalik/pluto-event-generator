@@ -1,264 +1,298 @@
 @ Lines starting with @ are comments
 @ Columns:
-@  Ch            - channel number
-@  Width         - ingore, set to 1.0
-@  Crosssection  - ignore, set to 1.0
-@  Reaction      - channel reaction
+@  Ch           - channel number
+@  Width        - ingore, set to 1.0
+@  Crosssection - ignore, set to 1.0
+@  Reaction     - channel reaction
 @
 @  Ch Width  Crossection   Reaction
 
 @ pp elastic and quasi-elastics
-@   0   1.0     0.0        p,p
-    1   1.0     0.0        p,p,pi0
-    2   1.0     0.0        p,p,pi0,pi0
-    3   1.0     0.0        p,p,pi+,pi-
-    4   1.0     0.0        p,p,pi0,pi0,pi0
-    5   1.0  1840.0        p,p,pi+,pi-,pi0
-    6   1.0   300.0        p,p,pi0,pi0,pi0,pi0
-    7   1.0   300.0        p,p,pi+,pi-,pi0,pi0
-    8   1.0   300.0        p,p,pi+,pi-,pi+,pi-
-    9   1.0     0.0        p,p,pi0,pi0,pi0,pi0,pi0
-   10   1.0     0.0        p,p,pi+,pi-,pi0,pi0,pi0
-   11   1.0     0.0        p,p,pi+,pi-,pi+,pi-,pi0
+@   0   1.0     0.0     p,p
+    1   1.0     0.0     p,p,pi0
+    2   1.0     0.0     p,p,pi0,pi0
+    3   1.0     0.0     p,p,pi+,pi-
+    4   1.0     0.0     p,p,pi0,pi0,pi0
+    5   1.0  1840.0     p,p,pi+,pi-,pi0
+    6   1.0   300.0     p,p,pi0,pi0,pi0,pi0
+    7   1.0   300.0     p,p,pi+,pi-,pi0,pi0
+    8   1.0   300.0     p,p,pi+,pi-,pi+,pi-
+    9   1.0     0.0     p,p,pi0,pi0,pi0,pi0,pi0
+   10   1.0     0.0     p,p,pi+,pi-,pi0,pi0,pi0
+   11   1.0     0.0     p,p,pi+,pi-,pi+,pi-,pi0
 
-   20   1.0     0.0        p,n,pi+
-   21   1.0     0.0        p,n,pi+,pi0
-   22   1.0     0.0        p,n,pi+,pi0,pi0
-   23   1.0     0.0        p,n,pi+,pi+,pi-
-   24   1.0     0.0        p,n,pi+,pi0,pi0,pi0
-   25   1.0     0.0        p,n,pi+,pi+,pi-,pi0
-   26   1.0     0.0        p,n,pi+,pi0,pi0,pi0,pi0
-   27   1.0     0.0        p,n,pi+,pi+,pi-,pi0,pi0
-   28   1.0     0.0        p,n,pi+,pi+,pi-,pi+,pi-
+   20   1.0     0.0     p,n,pi+
+   21   1.0     0.0     p,n,pi+,pi0
+   22   1.0     0.0     p,n,pi+,pi0,pi0
+   23   1.0     0.0     p,n,pi+,pi+,pi-
+   24   1.0     0.0     p,n,pi+,pi0,pi0,pi0
+   25   1.0     0.0     p,n,pi+,pi+,pi-,pi0
+   26   1.0     0.0     p,n,pi+,pi0,pi0,pi0,pi0
+   27   1.0     0.0     p,n,pi+,pi+,pi-,pi0,pi0
+   28   1.0     0.0     p,n,pi+,pi+,pi-,pi+,pi-
 
 @ Delta dalitz
-   50   1.0     1.0        D+[dilepton[e+,e-],p],p,pi+,pi-
-   51   1.0     1.0        D0[dilepton[e+,e-],n],p,pi+,pi+,pi-
-   52   1.0     1.0        D+[dilepton[e+,e-],p],Lambda,K+
-   53   1.0     1.0        D0[dilepton[e+,e-],n],Lambda,K+,pi+
+   50   1.0     1.0     D+[dilepton[e+,e-],p],p,pi+,pi-
+   51   1.0     1.0     D0[dilepton[e+,e-],n],p,pi+,pi+,pi-
+
+   62   1.0     1.0     D+[dilepton[e+,e-],p],Lambda,K+
+   63   1.0     1.0     D0[dilepton[e+,e-],n],Lambda,K+,pi+
+
+   70   1.0     1.0     D+[p,pi0],p
+   71   1.0     1.0     D+[n,pi+],p
+   72   1.0     1.0     D+[p,pi0],p,pi+,pi-
+   73   1.0     1.0     D+[n,pi+],p,pi+,pi-
+
+   80   1.0     1.0     D0[p,pi-],p,pi+
+   81   1.0     1.0     D0[n,pi0],p,pi+
+   82   1.0     1.0     D0[p,pi-],p,pi+,pi-,pi+
+   83   1.0     1.0     D0[n,pi0],p,pi+,pi-,pi+
 
 @ Lambda1115 + K+
-  100   1.0     1.0        p,Lambda,K+
-  101   1.0     1.0        p,Lambda,K+,pi0
-  102   1.0     1.0        p,Lambda,K+,pi0,pi0
-  103   1.0    21.3        p,Lambda,K+,pi+,pi-
-  104   1.0     0.0        p,Lambda,K+,pi0,pi0,pi0
-  105   1.0    21.3        p,Lambda,K+,pi+,pi-,pi0
-  106   1.0     0.0        p,Lambda,K+,pi0,pi0,pi0,pi0
-  107   1.0    21.3        p,Lambda,K+,pi+,pi-,pi0,pi0
-  108   1.0    21.3        p,Lambda,K+,pi+,pi-,pi+,pi-
+  100   1.0     1.0     p,Lambda,K+
+  101   1.0     1.0     p,Lambda,K+,pi0
+  102   1.0     1.0     p,Lambda,K+,pi0,pi0
+  103   1.0    21.3     p,Lambda,K+,pi+,pi-
+  104   1.0     0.0     p,Lambda,K+,pi0,pi0,pi0
+  105   1.0    21.3     p,Lambda,K+,pi+,pi-,pi0
+  106   1.0     0.0     p,Lambda,K+,pi0,pi0,pi0,pi0
+  107   1.0    21.3     p,Lambda,K+,pi+,pi-,pi0,pi0
+  108   1.0    21.3     p,Lambda,K+,pi+,pi-,pi+,pi-
 
-  120   1.0     0.0        n,Lambda,K+,pi+
-  121   1.0     0.0        n,Lambda,K+,pi+,pi0
-  122   1.0     0.0        n,Lambda,K+,pi+,pi0,pi0
-  123   1.0     0.0        n,Lambda,K+,pi+,pi+,pi-
-  124   1.0     0.0        n,Lambda,K+,pi+,pi+,pi-,pi0
+  120   1.0     0.0     n,Lambda,K+,pi+
+  121   1.0     0.0     n,Lambda,K+,pi+,pi0
+  122   1.0     0.0     n,Lambda,K+,pi+,pi0,pi0
+  123   1.0     0.0     n,Lambda,K+,pi+,pi+,pi-
+  124   1.0     0.0     n,Lambda,K+,pi+,pi+,pi-,pi0
 
 @ Lambda1115 + K0s
-  140   1.0    60.0        p,Lambda,K0S,pi+
-  141   1.0     0.0        p,Lambda,K0S,pi+,pi0
-  142   1.0     0.0        p,Lambda,K0S,pi+,pi0,pi0
-  143   1.0     0.0        p,Lambda,K0S,pi+,pi+,pi-
-  144   1.0     0.0        p,Lambda,K0S,pi+,pi+,pi-,pi0
+  140   1.0    60.0     p,Lambda,K0S,pi+
+  141   1.0     0.0     p,Lambda,K0S,pi+,pi0
+  142   1.0     0.0     p,Lambda,K0S,pi+,pi0,pi0
+  143   1.0     0.0     p,Lambda,K0S,pi+,pi+,pi-
+  144   1.0     0.0     p,Lambda,K0S,pi+,pi+,pi-,pi0
 
-  145   1.0     0.0        n,Lambda,K0S,pi+,pi+
-  146   1.0     0.0        n,Lambda,K0S,pi+,pi+,pi0
-  147   1.0     0.0        n,Lambda,K0S,pi+,pi+,pi0,pi0
-  148   1.0     0.0        n,Lambda,K0S,pi+,pi+,pi+,pi-
+  145   1.0     0.0     n,Lambda,K0S,pi+,pi+
+  146   1.0     0.0     n,Lambda,K0S,pi+,pi+,pi0
+  147   1.0     0.0     n,Lambda,K0S,pi+,pi+,pi0,pi0
+  148   1.0     0.0     n,Lambda,K0S,pi+,pi+,pi+,pi-
 
 @ Lambda1115 + K0l
-  160   1.0    60.0        p,Lambda,K0L,pi+
-  161   1.0     0.0        p,Lambda,K0L,pi+,pi0
-  162   1.0     0.0        p,Lambda,K0L,pi+,pi0,pi0
-  163   1.0     0.0        p,Lambda,K0L,pi+,pi+,pi-
-  164   1.0     0.0        p,Lambda,K0L,pi+,pi+,pi-,pi0
+  160   1.0    60.0     p,Lambda,K0L,pi+
+  161   1.0     0.0     p,Lambda,K0L,pi+,pi0
+  162   1.0     0.0     p,Lambda,K0L,pi+,pi0,pi0
+  163   1.0     0.0     p,Lambda,K0L,pi+,pi+,pi-
+  164   1.0     0.0     p,Lambda,K0L,pi+,pi+,pi-,pi0
 
-  165   1.0     0.0        n,Lambda,K0L,pi+,pi+
-  166   1.0     0.0        n,Lambda,K0L,pi+,pi+,pi0
-  167   1.0     0.0        n,Lambda,K0L,pi+,pi+,pi0,pi0
-  168   1.0     0.0        n,Lambda,K0L,pi+,pi+,pi+,pi-
+  165   1.0     0.0     n,Lambda,K0L,pi+,pi+
+  166   1.0     0.0     n,Lambda,K0L,pi+,pi+,pi0
+  167   1.0     0.0     n,Lambda,K0L,pi+,pi+,pi0,pi0
+  168   1.0     0.0     n,Lambda,K0L,pi+,pi+,pi+,pi-
 
 
 @ Sigma01180 + K+
-  200   1.0     1.0        p,Sigma0,K+
-  201   1.0     1.0        p,Sigma0,K+,pi0
-  202   1.0     1.0        p,Sigma0,K+,pi0,pi0
-  203   1.0    21.3        p,Sigma0,K+,pi+,pi-
-  204   1.0     0.0        p,Sigma0,K+,pi0,pi0,pi0
-  205   1.0    21.3        p,Sigma0,K+,pi+,pi-,pi0
-  206   1.0     0.0        p,Sigma0,K+,pi0,pi0,pi0,pi0          @ Warning in <PChannel::Genbod>: Sampling model failed in p + p --> p + Sigma0 + K+ + pi0 + pi0 + pi0 + pi0
-  207   1.0    21.3        p,Sigma0,K+,pi+,pi-,pi0,pi0
-  208   1.0    21.3        p,Sigma0,K+,pi+,pi-,pi+,pi-
+  200   1.0     1.0     p,Sigma0,K+
+  201   1.0     1.0     p,Sigma0,K+,pi0
+  202   1.0     1.0     p,Sigma0,K+,pi0,pi0
+  203   1.0    21.3     p,Sigma0,K+,pi+,pi-
+  204   1.0     0.0     p,Sigma0,K+,pi0,pi0,pi0
+  205   1.0    21.3     p,Sigma0,K+,pi+,pi-,pi0
+  206   1.0     0.0     p,Sigma0,K+,pi0,pi0,pi0,pi0       @ Warning in <PChannel::Genbod>: Sampling model failed in p + p --> p + Sigma0 + K+ + pi0 + pi0 + pi0 + pi0
+  207   1.0    21.3     p,Sigma0,K+,pi+,pi-,pi0,pi0
+  208   1.0    21.3     p,Sigma0,K+,pi+,pi-,pi+,pi-
 
-  220   1.0     0.0        n,Sigma0,K+,pi+
-  221   1.0     0.0        n,Sigma0,K+,pi+,pi0
-  222   1.0     0.0        n,Sigma0,K+,pi+,pi0,pi0
-  223   1.0     0.0        n,Sigma0,K+,pi+,pi+,pi-
-  224   1.0     0.0        n,Sigma0,K+,pi+,pi+,pi-,pi0
+  220   1.0     0.0     n,Sigma0,K+,pi+
+  221   1.0     0.0     n,Sigma0,K+,pi+,pi0
+  222   1.0     0.0     n,Sigma0,K+,pi+,pi0,pi0
+  223   1.0     0.0     n,Sigma0,K+,pi+,pi+,pi-
+  224   1.0     0.0     n,Sigma0,K+,pi+,pi+,pi-,pi0       @ Warning in <PChannel::Genbod>: Sampling model failed in p + p --> n + Sigma0 + K+ + pi+ + pi+ + pi- + pi0
 
 @ Sigma01180 + K0s
-  240   1.0    60.0        p,Sigma0,K0S,pi+
-  241   1.0     0.0        p,Sigma0,K0S,pi+,pi0
-  242   1.0     0.0        p,Sigma0,K0S,pi+,pi0,pi0
-  243   1.0     0.0        p,Sigma0,K0S,pi+,pi+,pi-
-  244   1.0     0.0        p,Sigma0,K0S,pi+,pi+,pi-,pi0
+  240   1.0    60.0     p,Sigma0,K0S,pi+
+  241   1.0     0.0     p,Sigma0,K0S,pi+,pi0
+  242   1.0     0.0     p,Sigma0,K0S,pi+,pi0,pi0
+  243   1.0     0.0     p,Sigma0,K0S,pi+,pi+,pi-          @ Warning in <PChannel::Genbod>: Sampling model failed in p + p --> p + Sigma0 + K0S + pi+ + pi+ + pi-
+  244   1.0     0.0     p,Sigma0,K0S,pi+,pi+,pi-,pi0
 
-  245   1.0     0.0        n,Sigma0,K0S,pi+,pi+
-  246   1.0     0.0        n,Sigma0,K0S,pi+,pi+,pi0
-  247   1.0     0.0        n,Sigma0,K0S,pi+,pi+,pi0,pi0
-  248   1.0     0.0        n,Sigma0,K0S,pi+,pi+,pi+,pi-
+  245   1.0     0.0     n,Sigma0,K0S,pi+,pi+
+  246   1.0     0.0     n,Sigma0,K0S,pi+,pi+,pi0
+  247   1.0     0.0     n,Sigma0,K0S,pi+,pi+,pi0,pi0
+  248   1.0     0.0     n,Sigma0,K0S,pi+,pi+,pi+,pi-      @ Warning in <PChannel::Genbod>: Sampling model failed in p + p --> n + Sigma0 + K0S + pi+ + pi+ + pi+ + pi-
 
 @ Sigma01180 + K0l
-  260   1.0    60.0        p,Sigma0,K0L,pi+
-  261   1.0     0.0        p,Sigma0,K0L,pi+,pi0
-  262   1.0     0.0        p,Sigma0,K0L,pi+,pi0,pi0
-  263   1.0     0.0        p,Sigma0,K0L,pi+,pi+,pi-
-  264   1.0     0.0        p,Sigma0,K0L,pi+,pi+,pi-,pi0
+  260   1.0    60.0     p,Sigma0,K0L,pi+
+  261   1.0     0.0     p,Sigma0,K0L,pi+,pi0
+  262   1.0     0.0     p,Sigma0,K0L,pi+,pi0,pi0
+  263   1.0     0.0     p,Sigma0,K0L,pi+,pi+,pi-
+  264   1.0     0.0     p,Sigma0,K0L,pi+,pi+,pi-,pi0
 
-  265   1.0     0.0        n,Sigma0,K0L,pi+,pi+
-  266   1.0     0.0        n,Sigma0,K0L,pi+,pi+,pi0
-  267   1.0     0.0        n,Sigma0,K0L,pi+,pi+,pi0,pi0
-  268   1.0     0.0        n,Sigma0,K0L,pi+,pi+,pi+,pi-
+  265   1.0     0.0     n,Sigma0,K0L,pi+,pi+
+  266   1.0     0.0     n,Sigma0,K0L,pi+,pi+,pi0
+  267   1.0     0.0     n,Sigma0,K0L,pi+,pi+,pi0,pi0
+  268   1.0     0.0     n,Sigma0,K0L,pi+,pi+,pi+,pi-
 
 
 @ Sigma+1180 + K+
-  300   1.0     0.0        n,Sigma+,K+,pi0
-  301   1.0     0.0        n,Sigma+,K+,pi0,pi0
-  302   1.0     0.0        n,Sigma+,K+,pi+,pi-
-  303   1.0     0.0        n,Sigma+,K+,pi0,pi0,pi0
-  304   1.0     0.0        n,Sigma+,K+,pi+,pi-,pi0
-  305   1.0     0.0        n,Sigma+,K+,pi0,pi0,pi0,pi0
-  306   1.0     0.0        n,Sigma+,K+,pi+,pi+,pi0,pi0
-  307   1.0     0.0        n,Sigma+,K+,pi+,pi+,pi+,pi-
+  300   1.0     0.0     n,Sigma+,K+,pi0
+  301   1.0     0.0     n,Sigma+,K+,pi0,pi0
+  302   1.0     0.0     n,Sigma+,K+,pi+,pi-
+  303   1.0     0.0     n,Sigma+,K+,pi0,pi0,pi0
+  304   1.0     0.0     n,Sigma+,K+,pi+,pi-,pi0
+  305   1.0     0.0     n,Sigma+,K+,pi0,pi0,pi0,pi0
+  306   1.0     0.0     n,Sigma+,K+,pi+,pi+,pi0,pi0
+  307   1.0     0.0     n,Sigma+,K+,pi+,pi+,pi+,pi-
 
 @ Sigma+1180 + K0s
-  320   1.0     1.0        p,Sigma+,K0S
-  321   1.0     1.0        p,Sigma+,K0S,pi0
-  322   1.0     1.0        p,Sigma+,K0S,pi0,pi0
-  323   1.0    21.3        p,Sigma+,K0S,pi+,pi-
-  324   1.0     0.0        p,Sigma+,K0S,pi0,pi0,pi0
-  325   1.0    21.3        p,Sigma+,K0S,pi+,pi-,pi0
-  326   1.0     0.0        p,Sigma+,K0S,pi0,pi0,pi0,pi0
-  327   1.0    21.3        p,Sigma+,K0S,pi+,pi-,pi0,pi0
-  328   1.0    21.3        p,Sigma+,K0S,pi+,pi-,pi+,pi-
+  320   1.0     1.0     p,Sigma+,K0S
+  321   1.0     1.0     p,Sigma+,K0S,pi0
+  322   1.0     1.0     p,Sigma+,K0S,pi0,pi0
+  323   1.0    21.3     p,Sigma+,K0S,pi+,pi-
+  324   1.0     0.0     p,Sigma+,K0S,pi0,pi0,pi0
+  325   1.0    21.3     p,Sigma+,K0S,pi+,pi-,pi0
+  326   1.0     0.0     p,Sigma+,K0S,pi0,pi0,pi0,pi0
+  327   1.0    21.3     p,Sigma+,K0S,pi+,pi-,pi0,pi0
+  328   1.0    21.3     p,Sigma+,K0S,pi+,pi-,pi+,pi-
 
-  330   1.0     1.0        n,Sigma+,K0S,pi+
-  331   1.0     1.0        n,Sigma+,K0S,pi+,pi0
-  332   1.0     1.0        n,Sigma+,K0S,pi+,pi0,pi0
-  333   1.0    21.3        n,Sigma+,K0S,pi+,pi+,pi-
-  334   1.0     0.0        n,Sigma+,K0S,pi+,pi0,pi0,pi0
-  335   1.0    21.3        n,Sigma+,K0S,pi+,pi+,pi-,pi0
+  330   1.0     1.0     n,Sigma+,K0S,pi+
+  331   1.0     1.0     n,Sigma+,K0S,pi+,pi0
+  332   1.0     1.0     n,Sigma+,K0S,pi+,pi0,pi0
+  333   1.0    21.3     n,Sigma+,K0S,pi+,pi+,pi-
+  334   1.0     0.0     n,Sigma+,K0S,pi+,pi0,pi0,pi0
+  335   1.0    21.3     n,Sigma+,K0S,pi+,pi+,pi-,pi0
 
 @ Sigma+1180 + K0l
-  340   1.0     1.0        p,Sigma+,K0L
-  341   1.0     1.0        p,Sigma+,K0L,pi0
-  342   1.0     1.0        p,Sigma+,K0L,pi0,pi0
-  343   1.0    21.3        p,Sigma+,K0L,pi+,pi-
-  344   1.0     0.0        p,Sigma+,K0L,pi0,pi0,pi0
-  345   1.0    21.3        p,Sigma+,K0L,pi+,pi-,pi0
-  346   1.0     0.0        p,Sigma+,K0L,pi0,pi0,pi0,pi0
-  347   1.0    21.3        p,Sigma+,K0L,pi+,pi-,pi0,pi0
-  348   1.0    21.3        p,Sigma+,K0L,pi+,pi-,pi+,pi-
+  340   1.0     1.0     p,Sigma+,K0L
+  341   1.0     1.0     p,Sigma+,K0L,pi0
+  342   1.0     1.0     p,Sigma+,K0L,pi0,pi0
+  343   1.0    21.3     p,Sigma+,K0L,pi+,pi-
+  344   1.0     0.0     p,Sigma+,K0L,pi0,pi0,pi0
+  345   1.0    21.3     p,Sigma+,K0L,pi+,pi-,pi0
+  346   1.0     0.0     p,Sigma+,K0L,pi0,pi0,pi0,pi0
+  347   1.0    21.3     p,Sigma+,K0L,pi+,pi-,pi0,pi0
+  348   1.0    21.3     p,Sigma+,K0L,pi+,pi-,pi+,pi-
 
-  350   1.0     1.0        n,Sigma+,K0L,pi+
-  351   1.0     1.0        n,Sigma+,K0L,pi+,pi0
-  352   1.0     1.0        n,Sigma+,K0L,pi+,pi0,pi0
-  353   1.0    21.3        n,Sigma+,K0L,pi+,pi+,pi-
-  354   1.0     0.0        n,Sigma+,K0L,pi+,pi0,pi0,pi0
-  355   1.0    21.3        n,Sigma+,K0L,pi+,pi+,pi-,pi0
+  350   1.0     1.0     n,Sigma+,K0L,pi+
+  351   1.0     1.0     n,Sigma+,K0L,pi+,pi0
+  352   1.0     1.0     n,Sigma+,K0L,pi+,pi0,pi0
+  353   1.0    21.3     n,Sigma+,K0L,pi+,pi+,pi-
+  354   1.0     0.0     n,Sigma+,K0L,pi+,pi0,pi0,pi0
+  355   1.0    21.3     n,Sigma+,K0L,pi+,pi+,pi-,pi0
 
 @ Sigma-1180 + K+
-  400   1.0     0.0        p,Sigma-,K+,pi+
-  401   1.0     0.0        p,Sigma-,K+,pi+,pi0
-  402   1.0     0.0        p,Sigma-,K+,pi+,pi0,pi0
-  403   1.0     0.0        p,Sigma-,K+,pi+,pi+,pi-
-  404   1.0     0.0        p,Sigma-,K+,pi+,pi0,pi0,pi0
-  405   1.0     0.0        p,Sigma-,K+,pi0,pi+,pi-,pi0
+  400   1.0     0.0     p,Sigma-,K+,pi+
+  401   1.0     0.0     p,Sigma-,K+,pi+,pi0
+  402   1.0     0.0     p,Sigma-,K+,pi+,pi0,pi0
+  403   1.0     0.0     p,Sigma-,K+,pi+,pi+,pi-
+  404   1.0     0.0     p,Sigma-,K+,pi+,pi0,pi0,pi0
+  405   1.0     0.0     p,Sigma-,K+,pi0,pi+,pi-,pi0
 
-  410   1.0     0.0        n,Sigma-,K+,pi+,pi+
-  411   1.0     0.0        n,Sigma-,K+,pi+,pi+,pi0
-  412   1.0     0.0        n,Sigma-,K+,pi+,pi+,pi0,pi0
-  413   1.0     0.0        n,Sigma-,K+,pi+,pi+,pi+,pi-
+  410   1.0     0.0     n,Sigma-,K+,pi+,pi+
+  411   1.0     0.0     n,Sigma-,K+,pi+,pi+,pi0
+  412   1.0     0.0     n,Sigma-,K+,pi+,pi+,pi0,pi0
+  413   1.0     0.0     n,Sigma-,K+,pi+,pi+,pi+,pi-
 
 @ Sigma-1180 + K0s
-  420   1.0     1.0        p,Sigma-,K0S,pi+,pi+
-  421   1.0     1.0        p,Sigma-,K0S,pi+,pi+,pi0
-  422   1.0     1.0        p,Sigma-,K0S,pi+,pi+,pi0,pi0
-  423   1.0     1.0        p,Sigma-,K0S,pi+,pi+,pi+,pi-
+  420   1.0     1.0     p,Sigma-,K0S,pi+,pi+
+  421   1.0     1.0     p,Sigma-,K0S,pi+,pi+,pi0
+  422   1.0     1.0     p,Sigma-,K0S,pi+,pi+,pi0,pi0
+  423   1.0     1.0     p,Sigma-,K0S,pi+,pi+,pi+,pi-
 
-  430   1.0     1.0        n,Sigma-,K0S,pi+,pi+,pi+
-  431   1.0     1.0        n,Sigma-,K0S,pi+,pi+,pi+,pi0
+  430   1.0     1.0     n,Sigma-,K0S,pi+,pi+,pi+
+  431   1.0     1.0     n,Sigma-,K0S,pi+,pi+,pi+,pi0
 
 @ Sigma-1180 + K0l
-  440   1.0     1.0        p,Sigma-,K0L,pi+,pi+
-  441   1.0     1.0        p,Sigma-,K0L,pi+,pi+,pi0
-  442   1.0     1.0        p,Sigma-,K0L,pi+,pi+,pi0,pi0
-  443   1.0    21.3        p,Sigma-,K0L,pi+,pi+,pi+,pi-
+  440   1.0     1.0     p,Sigma-,K0L,pi+,pi+
+  441   1.0     1.0     p,Sigma-,K0L,pi+,pi+,pi0
+  442   1.0     1.0     p,Sigma-,K0L,pi+,pi+,pi0,pi0
+  443   1.0    21.3     p,Sigma-,K0L,pi+,pi+,pi+,pi-
 
-  450   1.0     1.0        n,Sigma-,K0L,pi+,pi+,pi+
-  451   1.0     1.0        n,Sigma-,K0L,pi+,pi+,pi+,pi0
+  450   1.0     1.0     n,Sigma-,K0L,pi+,pi+,pi+
+  451   1.0     1.0     n,Sigma-,K0L,pi+,pi+,pi+,pi0
 
 @ Heavy hyperons
-  500   1.0     1.0        p,K+,Sigma(1385)0[Lambda,dilepton[e+,e-]]
-  501   1.0     1.0        p,K+,Sigma(1385)0[decay]
+  500   1.0     1.0     p,K+,Sigma(1385)0[Lambda,dilepton[e+,e-]]
+  501   1.0     1.0     p,K+,Sigma(1385)0[decay]
 
-  510   1.0     1.0        p,K+,Lambda(1405)[Lambda,dilepton[e+,e-]]
-  511   1.0     1.0        p,K+,Lambda(1405)[decay:Sigma13850:]
+  510   1.0     1.0     p,K+,Lambda(1405)[Lambda,dilepton[e+,e-]]
+  511   1.0     1.0     p,K+,Lambda(1405)[decay:Sigma13850:]
 
-  520   1.0     1.0        p,K+,Lambda(1520)[Lambda,dilepton[e+,e-]]
-  521   1.0     1.0        p,K+,Lambda(1520)[decay:Sigma13850:Lambda1405:]
+  520   1.0     1.0     p,K+,Lambda(1520)[Lambda,dilepton[e+,e-]]
+  521   1.0     1.0     p,K+,Lambda(1520)[decay:Sigma13850:Lambda1405:]
 
-  530   1.0     1.0        p,K+,Xi(1530)0[Lambda,dilepton[e+,e-]]
-  531   1.0     1.0        p,K+,Xi(1530)0[decay]
+  530   1.0     1.0     p,K+,Xi(1530)0[Lambda,dilepton[e+,e-]]
+  531   1.0     1.0     p,K+,Xi(1530)0[decay]
 
-  540   1.0     1.0        p,K+,Xi(1530)-[Lambda,dilepton[e+,e-]]
-  541   1.0     1.0        p,K+,Xi(1530)-[decay]
+  540   1.0     1.0     p,K+,Xi(1530)-[Lambda,dilepton[e+,e-]]
+  541   1.0     1.0     p,K+,Xi(1530)-[decay]
 
 @ Double strange channels
-  600   1.0     1.0        Xi-,K+,K+,p
-  601   1.0     1.0        Xi-,K+,K+,p,pi0
-  602   1.0     1.0        Xi-,K+,K+,p,pi0,pi0
-  603   1.0     1.0        Xi-,K+,K+,p,pi+,pi-
-  604   1.0     1.0        Xi-,K+,K+,p,pi0,pi0,pi0
-  605   1.0     1.0        Xi-,K+,K+,p,pi+,pi-,pi0
-  610   1.0     1.0        Xi-,K0S,K0S,p
-  611   1.0     1.0        Xi-,K0S,K0S,p,pi0
-  612   1.0     1.0        Xi-,K0S,K0S,p,pi0,pi0
-  613   1.0     1.0        Xi-,K0S,K0S,p,pi+,pi-
-  614   1.0     1.0        Xi-,K0S,K0S,p,pi0,pi0,pi0
-  615   1.0     1.0        Xi-,K0S,K0S,p,pi+,pi-,pi0
+  600   1.0     1.0     Xi-,K+,K+,p
+  601   1.0     1.0     Xi-,K+,K+,p,pi0
+  602   1.0     1.0     Xi-,K+,K+,p,pi0,pi0
+  603   1.0     1.0     Xi-,K+,K+,p,pi+,pi-
+  604   1.0     1.0     Xi-,K+,K+,p,pi0,pi0,pi0
+  605   1.0     1.0     Xi-,K+,K+,p,pi+,pi-,pi0
+  610   1.0     1.0     Xi-,K0S,K0S,p
+  611   1.0     1.0     Xi-,K0S,K0S,p,pi0
+  612   1.0     1.0     Xi-,K0S,K0S,p,pi0,pi0
+  613   1.0     1.0     Xi-,K0S,K0S,p,pi+,pi-
+  614   1.0     1.0     Xi-,K0S,K0S,p,pi0,pi0,pi0
+  615   1.0     1.0     Xi-,K0S,K0S,p,pi+,pi-,pi0
 
-  650   1.0     1.0        Lambda,Lambda,K+,K+
-  651   1.0     1.0        Lambda,Lambda,K+,K+,pi0
-  652   1.0     1.0        Lambda,Lambda,K+,K+,pi0,pi0
-  653   1.0     1.0        Lambda,Lambda,K+,K+,pi+,pi-
-  654   1.0     1.0        Lambda,Lambda,K+,K+,pi0,pi0,pi0
-  655   1.0     1.0        Lambda,Lambda,K+,K+,pi+,pi-,pi0
+  650   1.0     1.0     Lambda,Lambda,K+,K+
+  651   1.0     1.0     Lambda,Lambda,K+,K+,pi0
+  652   1.0     1.0     Lambda,Lambda,K+,K+,pi0,pi0
+  653   1.0     1.0     Lambda,Lambda,K+,K+,pi+,pi-
+  654   1.0     1.0     Lambda,Lambda,K+,K+,pi0,pi0,pi0
+  655   1.0     1.0     Lambda,Lambda,K+,K+,pi+,pi-,pi0
 
-  660   1.0     1.0        Lambda,Sigma0,K+,K+
-  661   1.0     1.0        Lambda,Sigma0,K+,K+,pi0
-  662   1.0     1.0        Lambda,Sigma0,K+,K+,pi0,pi0
-  663   1.0     1.0        Lambda,Sigma0,K+,K+,pi+,pi-
-  664   1.0     1.0        Lambda,Sigma0,K+,K+,pi0,pi0,pi0
-  665   1.0     1.0        Lambda,Sigma0,K+,K+,pi+,pi-,pi0
+  660   1.0     1.0     Lambda,Sigma0,K+,K+
+  661   1.0     1.0     Lambda,Sigma0,K+,K+,pi0
+  662   1.0     1.0     Lambda,Sigma0,K+,K+,pi0,pi0
+  663   1.0     1.0     Lambda,Sigma0,K+,K+,pi+,pi-
+  664   1.0     1.0     Lambda,Sigma0,K+,K+,pi0,pi0,pi0
+  665   1.0     1.0     Lambda,Sigma0,K+,K+,pi+,pi-,pi0
 
 @ K+K- production
-  700   1.0     1.0        p,p,K+,K-
-  700   1.0     1.0        p,p,K+,K-,pi0
-  700   1.0     1.0        p,p,K+,K-,pi0,pi0
-  700   1.0     1.0        p,p,K+,K-,pi+,pi-
-  700   1.0     1.0        p,p,K+,K-,pi0,pi0,pi0
-  700   1.0     1.0        p,p,K+,K-,pi+,pi-,pi0
+  700   1.0     1.0     p,p,K+,K-
+  701   1.0     1.0     p,p,K+,K-,pi0
+  702   1.0     1.0     p,p,K+,K-,pi0,pi0
+  703   1.0     1.0     p,p,K+,K-,pi+,pi-
+  704   1.0     1.0     p,p,K+,K-,pi0,pi0,pi0
+  705   1.0     1.0     p,p,K+,K-,pi+,pi-,pi0
 
-  710   1.0     1.0        p,p,K+,K0S,pi-
-  711   1.0     1.0        p,p,K+,K0S,pi-,pi0
-  712   1.0     1.0        p,p,K+,K0S,pi-,pi0,pi0
-  713   1.0     1.0        p,p,K+,K0S,pi-,pi+,pi-
+  710   1.0     1.0     p,p,K+,K0S,pi-
+  711   1.0     1.0     p,p,K+,K0S,pi-,pi0
+  712   1.0     1.0     p,p,K+,K0S,pi-,pi0,pi0
+  713   1.0     1.0     p,p,K+,K0S,pi-,pi+,pi-
 
 @ K0K0 production
-  750   1.0     6.4        p,p,K0S,K0S
-  751   1.0    15.7        p,n,K0S,K0S,pi0
-  752   1.0    16.0        p,p,K0S,K0S,pi0,pi0
-  753   1.0     5.4        p,n,K0S,K0S,pi+,pi-
-  754   1.0     6.3        p,p,K0S,K0S,pi0,pi0,pi0
-  755   1.0    36.0        p,n,K0S,K0S,pi+,pi+,pi0
+  750   1.0     6.4     p,p,K0S,K0S
+  751   1.0    15.7     p,n,K0S,K0S,pi0
+  752   1.0    16.0     p,p,K0S,K0S,pi0,pi0
+  753   1.0     5.4     p,n,K0S,K0S,pi+,pi-
+  754   1.0     6.3     p,p,K0S,K0S,pi0,pi0,pi0
+  755   1.0    36.0     p,n,K0S,K0S,pi+,pi+,pi0
+
+@ mesons
+  900   1.0     1.0     p,p,pi0[g,g]
+
+  910   1.0     1.0     p,p,omega[pi0,pi+,pi-]
+  911   1.0     1.0     p,p,omega[pi0,dilepton[e+,e-]]
+  912   1.0     1.0     p,p,omega[pi0[g,g],dilepton[e+,e-]]
+
+  920   1.0     1.0     p,p,eta[g,g]
+  921   1.0     1.0     p,p,eta[pi0,pi+,pi-]
+  922   1.0     1.0     p,p,eta[pi0[g,g],pi+,pi-]
+  923   1.0     1.0     p,p,eta[pi0[dilepton[e+,e-],g],pi+,pi-]
+  924   1.0     1.0     p,p,eta[e+,e-,pi+,pi-]
+  929   1.0     1.0     p,p,eta
+
+  930   1.0     1.0     p,p,eta'[eta[decay],pi+,pi-]
+  931   1.0     1.0     p,p,eta'[eta[pi+,pi-,pi0],pi+,pi-]
+
+  940   1.0     1.0     p,p,phi
+  941   1.0     1.0     p,p,phi[decay]
+  942   1.0     1.0     p,p,phi[K+,K-]
+
+  950   1.0     1.0     p,p,f1[eta[pi+,pi-,pi0],pi+,pi-]

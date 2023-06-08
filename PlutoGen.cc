@@ -341,6 +341,10 @@ auto load_database(const char * dbfile) -> std::map<int, channel_data> {
             clear_chars(_parts, ']');
 
             channel_data chd = { channel, width, crosssection, particles };
+            if (channels.find(channel) != channels.end()) {
+                fprintf(stderr, "Channel %d already exists in the database\n", channel);
+                exit(EXIT_FAILURE);
+            }
             channels[channel] = std::move(chd);
         }
     }
