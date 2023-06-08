@@ -467,12 +467,17 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         char buff[200];
-        if (output_dir.length())
-            sprintf(buff, "%s/pluto_chan_%03d_events_%d_seed_%04d", output_dir.c_str(), channel_id, events, l);
+        if (channel_id < 0) {
+            sprintf(buff, "pluto_chan_%s_events_%d_seed_%04d", channel_string.c_str(), events, l);
+        }
         else
+        {
             sprintf(buff, "pluto_chan_%03d_events_%d_seed_%04d", channel_id, events, l);
-
+        }
         std::string tmpname = buff;
+
+        if (output_dir.length())
+            tmpname = output_dir + "/" + tmpname;
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         //Some Particles for the reaction
@@ -653,21 +658,35 @@ int main(int argc, char **argv) {
     auto channels = load_database(par_database.c_str());
 
     while (optind < argc) {
-        auto selected_channel = atoi(argv[optind++]);
-        const auto chit = channels.find(selected_channel);
-        if (chit == channels.end()) {
-            printf("Channel %d is missing\n", selected_channel);
-            exit(EXIT_FAILURE);
-        }
+        try {
+            auto selected_channel = stoi(argv[optind]);
 
-        if (par_query) {
-            if (!query_channel(selected_channel, chit->second.body, Eb))
+            const auto chit = channels.find(selected_channel);
+            if (chit == channels.end()) {
+                printf("Channel %d is missing\n", selected_channel);
                 exit(EXIT_FAILURE);
+            }
+
+            if (par_query) {
+                if (!query_channel(selected_channel, chit->second.body, Eb))
+                    exit(EXIT_FAILURE);
+            }
+            else
+            {
+                run_channel(selected_channel, chit->second.body, par_events, par_seed, par_loops, Eb, par_output);
+            }
         }
-        else
+        catch (const std::invalid_argument &)
         {
-            run_channel(selected_channel, chit->second.body, par_events, par_seed, par_loops, Eb, par_output);
+            if (par_query) {
+                fprintf(stderr, "Argument must be a channelk number, skipping it.\n");
+            }
+            else
+            {
+                run_channel(-1, argv[optind], par_events, par_seed, par_loops, Eb, par_output);
+            }
         }
+        optind++;
     }
 
     exit(EXIT_SUCCESS);
