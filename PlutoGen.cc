@@ -14,12 +14,18 @@
 
 #include <getopt.h>
 
-PParticle* p_b = nullptr; // Beam proton
-PParticle* p_t = nullptr; // Target proton
+namespace
+{
+PParticle* p_b = nullptr; // Beam particle
+PParticle* p_t = nullptr; // Target particle
 PParticle* q = nullptr;
+float beam_energy = 0.0;
+} // namespace
 
 // #define NSTARS 1        // define custom Nstar resonances
 #define LOOP_DEF 1
+
+// *********************************************************************************************************************
 
 /// This will hold the reaction graph after.
 /// Owns the children nodes.
@@ -64,6 +70,10 @@ auto print_reactions(reaction_node* mother) -> void
         }
     }
 }
+
+// *********************************************************************************************************************
+
+// String manipulation functions
 
 std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems)
 {
@@ -124,6 +134,79 @@ static inline std::string& clear_chars(std::string& str, char s)
     }
     return str;
 }
+
+// *********************************************************************************************************************
+
+/// Configure the collision system.
+/// If !b and !c then beam energy will be only set. One energy defined, cannot be overriden later.
+/// @param b beam particle
+/// @param t target particle
+/// @param energy beam particle energy
+/// @return system was initialized
+auto init_collision_system(const char* b, const char* t, float energy) -> bool
+{
+    if (!q and !b and !t)
+    {
+        beam_energy = energy;
+        return false;
+    }
+
+    if (!q)
+    {
+        if (beam_energy == 0.0) { beam_energy = energy; }
+
+        p_b = new PParticle(b, beam_energy); // Beam proton
+        p_t = new PParticle(t);              // Target proton
+        q = new PParticle(*p_b + *p_t);
+        return true;
+    }
+
+    return false;
+}
+
+auto init_collision_system(std::string collision_system) -> bool
+{
+    auto system_parts = split(trim(collision_system), ',');
+
+    if (system_parts.size() != 3)
+    {
+        fprintf(stderr, "Incorrect collision system string: %s\n", collision_system.c_str());
+        abort();
+    }
+
+    float energy = 0.;
+    try
+    {
+        energy = stof(system_parts[2].c_str());
+    }
+    catch (const std::invalid_argument&)
+    {
+        fprintf(stderr, "Invalid beam energy format: %s, must be of float type.\n", system_parts[2].c_str());
+        abort();
+    }
+
+    if (!system_parts[0].length() or !system_parts[1].length() or energy == 0.)
+    {
+        fprintf(stderr, "Ill-formed collision system string: %s -> %s %s %s\n", collision_system.c_str(), system_parts[0].c_str(),
+                system_parts[1].c_str(), system_parts[2].c_str());
+        abort();
+    }
+
+    auto r = init_collision_system(system_parts[0].c_str(), system_parts[1].c_str(), energy);
+    // printf("Collision system %s init: %d\n", collision_system.c_str(), r);
+    return r;
+}
+
+auto check_collision_system() -> void
+{
+    if (!q)
+    {
+        fprintf(stderr, "Collision system not initialized.\n");
+        abort();
+    }
+}
+
+// *********************************************************************************************************************
 
 constexpr auto max_decays = 7;
 constexpr const char* decay_product[max_decays] = {"d1", "d2", "d3", "d4", "d5", "d6", "d7"};
@@ -297,9 +380,11 @@ auto compile_reactions(reaction_node* mother, PDecayManager* pdm, int level = 0)
         if (mother->mother)
         {
             // printf("%*c   -> BR: ", level+1, ' ');
-            decay_channels->Print();
-            printf("\n");
+            // decay_channels->Print();
+            // printf("\n");
             pdm->AddChannel(mother->name.c_str(), decay_channels);
+            delete decay_channels;
+            decay_channels = nullptr;
         }
     }
     delete[] decay_channel_ids;
@@ -329,7 +414,12 @@ auto load_database(const char* dbfile) -> std::map<int, channel_data>
         {
             trim(line);
             if (line.length() == 0) { continue; }
-            if (line[0] == '@') { continue; }
+            if (line[0] == '#') { continue; }
+            if (line[0] == '@')
+            {
+                init_collision_system(line.c_str() + 1);
+                continue;
+            }
 
             int channel;
             float width;
@@ -343,7 +433,7 @@ auto load_database(const char* dbfile) -> std::map<int, channel_data>
             trim(comment);
 
             std::string _parts = particles;
-            replace_chars(_parts, '@', ',');
+            replace_chars(_parts, '#', ',');
             clear_chars(_parts, '[');
             clear_chars(_parts, ']');
 
@@ -437,8 +527,7 @@ auto init_nstar() -> void
 #endif /* NSTARS */
 }
 
-auto run_channel(int channel_id, std::string channel_string, int events, int seed, int loops, float beam_energy, std::string output_dir)
-    -> void
+auto run_channel(int channel_id, std::string channel_string, int events, int seed, int loops, std::string output_dir) -> void
 {
     TString detect_dalitz = channel_string;
     // if (detect_dalitz.Contains("dilepton"))
@@ -483,16 +572,11 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
 
         if (output_dir.length()) tmpname = output_dir + "/" + tmpname;
 
-            //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            // Some Particles for the reaction
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Some Particles for the reaction
 
 #ifndef NSTARS
-        if (!q)
-        {
-            p_b = new PParticle("p", beam_energy); // Beam proton
-            p_t = new PParticle("p");              // Target proton
-            q = new PParticle(*p_b + *p_t);
-        }
+        check_collision_system();
 
         PDecayManager* pdm = new PDecayManager;
 
@@ -506,6 +590,9 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
         pdm->Print();
 
         /*Int_t n = */ pdm->loop(events, 0, const_cast<char*>(tmpname.c_str()), 0, 0, 0, 1, 1);
+
+        delete decay_channels;
+        // delete pdm; FIXME Why it causes double free or corruption error?
 #else
 
         char str_en[20];
@@ -533,17 +620,12 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
 /// @param channel_string channel body
 /// @param energy the beam energy
 /// @return false if the total mass exceeds availabe energy, otherwise true
-auto query_channel(int channel_id, std::string channel_string, float beam_energy) -> bool
+auto query_channel(int channel_id, std::string channel_string) -> bool
 {
     PStrangenessPlugin::EnableExperimentalDecays(true);
     makeDistributionManager()->Exec("strangeness:init");
 
-    if (!q)
-    {
-        p_b = new PParticle("p", beam_energy); // Beam proton
-        p_t = new PParticle("p");              // Target proton
-        q = new PParticle(*p_b + *p_t);
-    }
+    check_collision_system();
 
     size_t sta = 0;
     reaction_node reaction_mother;
@@ -561,7 +643,7 @@ auto query_channel(int channel_id, std::string channel_string, float beam_energy
     }
 
     printf("Channel %4d :", channel_id);
-    printf("  sqrt(s) = %f  (T=%g)", q->M(), beam_energy);
+    printf("  sqrt(s) = %f  (%s + %s @ %g GeV)", q->M(), p_b->Name(), p_t->Name(), beam_energy);
     printf("  M = %f %c  ", total_mass, total_mass > q->M() ? '!' : ' ');
     print_reactions(&reaction_mother);
     putchar('\n');
@@ -579,7 +661,8 @@ int main(int argc, char** argv)
     int par_seed = 0;
     int par_query = 0;
     int list_strange = 0;
-    Float_t Eb = 4.5; // beam energy in AGeV
+    float Eb = 0.0;
+    const char* par_system = nullptr;
 
     std::string par_database = "ChannelsDatabase.txt";
     std::string par_output = "";
@@ -589,6 +672,7 @@ int main(int argc, char** argv)
                                     {"random-seed", no_argument, &par_random_seed, 1},
                                     {"list-strange", no_argument, &list_strange, 1},
                                     {"query", no_argument, &par_query, 1},
+                                    {"collision", required_argument, 0, 'c'},
                                     {"database", required_argument, 0, 'd'},
                                     {"events", required_argument, 0, 'e'},
                                     {"energy", required_argument, 0, 'E'},
@@ -604,7 +688,7 @@ int main(int argc, char** argv)
     {
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "d:e:E:hl:o:s:x:", long_options, &option_index);
+        c = getopt_long(argc, argv, "c:d:e:E:hl:o:s:x:", long_options, &option_index);
         if (c == -1) break;
 
         switch (c)
@@ -614,6 +698,9 @@ int main(int argc, char** argv)
                 printf("option %s", long_options[option_index].name);
                 if (optarg) printf(" with arg %s", optarg);
                 printf("\n");
+                break;
+            case 'c':
+                par_system = optarg;
                 break;
             case 'd':
                 par_database = optarg;
@@ -648,48 +735,81 @@ int main(int argc, char** argv)
         }
     }
 
-    if (optind == argc)
+    if (par_system) { init_collision_system(par_system); }
+    else if (Eb > 0.0) { init_collision_system(nullptr, nullptr, Eb); }
+
+    if (par_query)
     {
-        if (par_query)
+        auto channels = load_database(par_database.c_str());
+
+        if (optind == argc)
         {
-            auto channels = load_database(par_database.c_str());
             for (const auto& channel : channels)
-                query_channel(channel.first, channel.second.body, Eb);
+                query_channel(channel.first, channel.second.body);
             exit(EXIT_SUCCESS);
         }
+        else
+        {
+            while (optind < argc)
+            {
+                try
+                {
+                    auto selected_channel = stoi(argv[optind]);
 
-        std::cerr << "No channel given! Exiting..." << std::endl;
-        std::exit(EXIT_FAILURE);
+                    const auto chit = channels.find(selected_channel);
+                    if (chit == channels.end()) { fprintf(stderr, "Channel %d is missing\n", selected_channel); }
+
+                    if (!query_channel(selected_channel, chit->second.body)) exit(EXIT_FAILURE);
+                }
+                catch (const std::invalid_argument&)
+                {
+                    fprintf(stderr, "Argument must be a channel number, skipping it.\n");
+                }
+                optind++;
+            }
+        }
+
+        exit(EXIT_SUCCESS);
     }
-
-    auto channels = load_database(par_database.c_str());
-
-    while (optind < argc)
+    else
     {
-        try
+        if (optind == argc)
         {
-            auto selected_channel = stoi(argv[optind]);
-
-            const auto chit = channels.find(selected_channel);
-            if (chit == channels.end())
-            {
-                printf("Channel %d is missing\n", selected_channel);
-                exit(EXIT_FAILURE);
-            }
-
-            if (par_query)
-            {
-                if (!query_channel(selected_channel, chit->second.body, Eb)) exit(EXIT_FAILURE);
-            }
-            else { run_channel(selected_channel, chit->second.body, par_events, par_seed, par_loops, Eb, par_output); }
+            std::cerr << "No channel or reaction given! Exiting..." << std::endl;
+            std::exit(EXIT_FAILURE);
         }
-        catch (const std::invalid_argument&)
+
+        bool db_loaded = false;
+        decltype(load_database({})) channels;
+
+        while (optind < argc)
         {
-            if (par_query) { fprintf(stderr, "Argument must be a channelk number, skipping it.\n"); }
-            else { run_channel(-1, argv[optind], par_events, par_seed, par_loops, Eb, par_output); }
+            try
+            {
+                auto selected_channel = stoi(argv[optind]);
+
+                if (!db_loaded)
+                {
+                    channels = load_database(par_database.c_str());
+                    db_loaded = true;
+                }
+
+                const auto chit = channels.find(selected_channel);
+                if (chit == channels.end())
+                {
+                    printf("Channel %d is missing\n", selected_channel);
+                    exit(EXIT_FAILURE);
+                }
+
+                run_channel(selected_channel, chit->second.body, par_events, par_seed, par_loops, par_output);
+            }
+            catch (const std::invalid_argument&)
+            {
+                run_channel(-1, argv[optind], par_events, par_seed, par_loops, par_output);
+            }
+            optind++;
         }
-        optind++;
+
+        exit(EXIT_SUCCESS);
     }
-
-    exit(EXIT_SUCCESS);
 }
