@@ -1,0 +1,8 @@
+#ifndef PLUTOGEN_CONFIG_H
+#define PLUTOGEN_CONFIG_H
+
+constexpr char * pluto_default_config = "@CMAKE_INSTALL_FULL_DATADIR@/PlutoGen/ChannelsDatabase.txt";
+
+#define ROOT_VERSION @ROOT_VERSION@
+
+#endif /* PLUTOGEN_CONFIG_H */
