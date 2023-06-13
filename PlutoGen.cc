@@ -663,6 +663,27 @@ auto query_channel(int channel_id, std::string channel_string) -> bool
     return q->M() > total_mass;
 }
 
+auto usage(char** argv, int def_events, int def_seed, int def_loops, const char * def_output) -> void {
+    printf("Usage: %s [options] [args]\n\n  where options are:\n"
+           "    --verbose                      : make verbose output\n"
+           "    --brief                        : make output bries\n"
+           "\n"
+           "    -d file, --database file       : databse file, default is ./ChannelsDatabase.txt\n"
+           "    --query                        : query selected channels\n"
+           "    -c pattern --collision pattern : collision pattern in form of part_1,part_2,kinetic_energy\n"
+           "    -e number, --events number     : number of events, default is %d\n"
+           "    -s seed, --seed seed           : reaction seed, default is %d\n"
+           "    -l loops, --loops loops        : number of loops to execute, each loop increases seed by 1, default is %d\n"
+           "    -T energy, --energy energy     : override kinetic energy of the beam\n"
+           "    -o dir, --output output_dir    : output directory to save files, default is %s\n"
+           "    -h, --help                     : this help\n"
+           "\n"
+           "  and arguments are:\n"
+           "    channel_number                 : channel numbers, can specify multiple channels\n"
+           "    reaction_body                  : the reaction string, not allowed in --query mode\n",
+           argv[0], def_events, def_seed, def_loops, def_output);
+}
+
 int main(int argc, char** argv)
 {
     int par_random_seed = 0;
@@ -720,7 +741,7 @@ int main(int argc, char** argv)
                 par_events = atoi(optarg);
                 break;
             case 'h':
-                //                 Usage();
+                usage(argv, par_events, par_seed, par_loops, par_output.c_str());
                 exit(EXIT_SUCCESS);
                 break;
             case 'l':
