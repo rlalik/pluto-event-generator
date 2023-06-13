@@ -20,6 +20,7 @@ PParticle* p_b = nullptr; // Beam particle
 PParticle* p_t = nullptr; // Target particle
 PParticle* q = nullptr;
 float beam_energy = 0.0;
+int verbose_flag = 0;
 } // namespace
 
 // #define NSTARS 1        // define custom Nstar resonances
@@ -320,10 +321,10 @@ auto parse_reaction(const std::string line, reaction_node* mother, size_t& curre
         {
             if (level == 0) { abort(); }
 
-            if (verbose) printf("[%d] Entering decay mode\n", level);
+            if (verbose) printf("[%d] Entering decay mode for mother=%s\n", level, mother->name.c_str());
             auto decay_stop = line.find_first_of(",[]", current_stop);
             auto decay_string = line.substr(current_stop, decay_stop - current_stop);
-            add_daughter(mother, -1, "decay");
+            add_daughter(mother, -1, particle_name.c_str());
             current_stop = next_stop + 1;
             return;
         }
@@ -338,7 +339,7 @@ auto parse_reaction(const std::string line, reaction_node* mother, size_t& curre
         if (check_decay_start(line, next_stop))
         {
             current_stop = next_stop + 1;
-            parse_reaction(line, particle_node, current_stop, level + 1);
+            parse_reaction(line, particle_node, current_stop, level + 1, verbose);
 
             if (verbose) printf("[%d] Back at level -- current stop: %lu next stop: %lu\n", level, current_stop, next_stop);
             if (line[current_stop] == ',') { current_stop++; }
@@ -383,8 +384,8 @@ auto compile_reactions(reaction_node* mother, PDecayManager* pdm, int level = 0)
             // decay_channels->Print();
             // printf("\n");
             pdm->AddChannel(mother->name.c_str(), decay_channels);
-            delete decay_channels;
-            decay_channels = nullptr;
+            // delete decay_channels; FIXME
+            // decay_channels = nullptr;
         }
     }
     delete[] decay_channel_ids;
@@ -583,7 +584,14 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
         size_t sta = 0;
         reaction_node reaction_mother;
 
-        parse_reaction(channel_string, &reaction_mother, sta);
+        parse_reaction(channel_string, &reaction_mother, sta, 0, verbose_flag);
+
+        if (verbose_flag)
+        {
+            print_reactions(&reaction_mother);
+            putchar('\n');
+        }
+
         auto decay_channels = compile_reactions(&reaction_mother, pdm);
 
         pdm->InitReaction(q, decay_channels);
@@ -630,7 +638,7 @@ auto query_channel(int channel_id, std::string channel_string) -> bool
     size_t sta = 0;
     reaction_node reaction_mother;
 
-    parse_reaction(channel_string, &reaction_mother, sta);
+    parse_reaction(channel_string, &reaction_mother, sta, 0, verbose_flag);
 
     // q->Print();
 
@@ -653,7 +661,6 @@ auto query_channel(int channel_id, std::string channel_string) -> bool
 
 int main(int argc, char** argv)
 {
-    int verbose_flag = 0;
     int par_random_seed = 0;
     int par_events = 10000;
     int par_loops = 1;
@@ -675,11 +682,11 @@ int main(int argc, char** argv)
                                     {"collision", required_argument, 0, 'c'},
                                     {"database", required_argument, 0, 'd'},
                                     {"events", required_argument, 0, 'e'},
-                                    {"energy", required_argument, 0, 'E'},
                                     {"help", no_argument, 0, 'h'},
                                     {"loops", required_argument, 0, 'l'},
                                     {"output", required_argument, 0, 'o'},
                                     {"seed", required_argument, 0, 's'},
+                                    {"energy", required_argument, 0, 'T'},
                                     {"scale", required_argument, 0, 'x'},
                                     {0, 0, 0, 0}};
 
@@ -688,7 +695,7 @@ int main(int argc, char** argv)
     {
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "c:d:e:E:hl:o:s:x:", long_options, &option_index);
+        c = getopt_long(argc, argv, "c:d:e:hl:o:s:T:x:", long_options, &option_index);
         if (c == -1) break;
 
         switch (c)
@@ -708,9 +715,6 @@ int main(int argc, char** argv)
             case 'e':
                 par_events = atoi(optarg);
                 break;
-            case 'E':
-                Eb = atof(optarg);
-                break;
             case 'h':
                 //                 Usage();
                 exit(EXIT_SUCCESS);
@@ -726,6 +730,9 @@ int main(int argc, char** argv)
                 break;
             case 'x':
                 par_scale = atoi(optarg);
+                break;
+            case 'T':
+                Eb = atof(optarg);
                 break;
             case '?':
                 //                 abort();
