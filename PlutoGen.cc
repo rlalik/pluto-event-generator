@@ -1,6 +1,7 @@
 #include <PDecayChannel.h>
 #include <PDecayManager.h>
 #include <PParticle.h>
+#include <plugins/PMesonsPlugin.h>
 #include <plugins/PStrangenessPlugin.h>
 
 #include <cstdio>
@@ -540,6 +541,9 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
 
     makeDistributionManager()->Exec("strangeness:init");
 
+    PMesonsPlugin::EnableExperimentalDecays(kTRUE);
+    makeDistributionManager()->Exec("mesons:init");
+
     auto list_strange = false;
     if (list_strange)
     {
@@ -573,8 +577,8 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
 
         if (output_dir.length()) tmpname = output_dir + "/" + tmpname;
 
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Some Particles for the reaction
+            //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Some Particles for the reaction
 
 #ifndef NSTARS
         check_collision_system();
