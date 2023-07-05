@@ -531,19 +531,6 @@ auto init_nstar() -> void
 
 auto run_channel(int channel_id, std::string channel_string, int events, int seed, int loops, std::string output_dir) -> void
 {
-    TString detect_dalitz = channel_string;
-    // if (detect_dalitz.Contains("dilepton"))
-    // {
-    //     PStrangenessPlugin::EnableHadronDecays(false);
-    //     PStrangenessPlugin::EnablePhotonDecays(false);
-    // }
-    // else { PStrangenessPlugin::EnableDalitzDecays(false); }
-
-    makeDistributionManager()->Exec("strangeness:init");
-
-    PMesonsPlugin::EnableExperimentalDecays(kTRUE);
-    makeDistributionManager()->Exec("mesons:init");
-
     auto list_strange = false;
     if (list_strange)
     {
@@ -634,9 +621,6 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
 /// @return false if the total mass exceeds availabe energy, otherwise true
 auto query_channel(int channel_id, std::string channel_string) -> bool
 {
-    PStrangenessPlugin::EnableExperimentalDecays(true);
-    makeDistributionManager()->Exec("strangeness:init");
-
     check_collision_system();
 
     size_t sta = 0;
@@ -769,6 +753,11 @@ int main(int argc, char** argv)
 
     if (par_system) { init_collision_system(par_system); }
     else if (Eb > 0.0) { init_collision_system(nullptr, nullptr, Eb); }
+
+    //PStrangenessPlugin::EnableExperimentalDecays(true);
+    makeDistributionManager()->Exec("strangeness:init");
+    PMesonsPlugin::EnableExperimentalDecays(kTRUE);
+    makeDistributionManager()->Exec("mesons:init");
 
     if (par_query)
     {
