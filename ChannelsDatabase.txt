@@ -63,6 +63,8 @@
   107   0.0    21.3     p,Lambda,K+,pi+,pi-,pi0,pi0
   108   0.0    21.3     p,Lambda,K+,pi+,pi-,pi+,pi-
 
+  110   0.0     0.0     D++[p,pi+],Lambda,K0S
+
   120   0.0     0.0     n,Lambda,K+,pi+
   121   0.0     0.0     n,Lambda,K+,pi+,pi0
   122   0.0     0.0     n,Lambda,K+,pi+,pi0,pi0
@@ -93,6 +95,8 @@
   167   0.0     0.0     n,Lambda,K0L,pi+,pi+,pi0,pi0
   168   0.0     0.0     n,Lambda,K0L,pi+,pi+,pi+,pi-
 
+# Lambda115 + other
+  180   0.0     0.0     p,Lambda,KStar+[K0S,pi+]
 
 # Sigma01180 + K+
   200   0.0     0.0     p,Sigma0,K+
