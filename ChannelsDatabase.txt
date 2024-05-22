@@ -115,6 +115,12 @@
   223   0.0     0.0     n,Sigma0,K+,pi+,pi+,pi-
   224   0.0     0.0     n,Sigma0,K+,pi+,pi+,pi-,pi0       # Warning in <PChannel::Genbod>: Sampling model failed in p + p --> n + Sigma0 + K+ + pi+ + pi+ + pi- + pi0
 
+  230   0.0     0.0     p,Sigma0[Lambda,dilepton[e+,e-]],K+
+  231   0.0     0.0     n,Sigma0[Lambda,dilepton[e+,e-]],K+,pi+
+  232   0.0     0.0     p,Sigma0[Lambda,dilepton[e+,e-]],K+,pi0
+
+  249   0.0     0.0     p,Sigma0[Lambda,dilepton[e+,e-]],K0S,pi+
+
 # Sigma01180 + K0s
   240   0.0    60.0     p,Sigma0,K0S,pi+
   241   0.0     0.0     p,Sigma0,K0S,pi+,pi0
@@ -218,26 +224,26 @@
   451   0.0     0.0     n,Sigma-,K0L,pi+,pi+,pi+,pi0
 
 # Heavy hyperons
-  500   0.0     0.0     p,K+,Sigma(1385)0[Lambda,dilepton[e+,e-]]
-  501   0.0     0.0     p,K+,Sigma(1385)0[decay]
+  500   0.0     0.0     p,Sigma(1385)0[Lambda,dilepton[e+,e-]],K+
+  501   0.0     0.0     p,Sigma(1385)0[decay],K+
 
-  505   0.0     0.0     p,K0S,Sigma(1385)+[Lambda,pi+]
-  506   0.0     0.0     p,K+,Sigma(1385)-[Lambda,pi-],pi+
+  505   0.0     0.0     p,Sigma(1385)+[Lambda,pi+],K0S
+  506   0.0     0.0     p,Sigma(1385)-[Lambda,pi-],pi+,K+
 
-  510   0.0     0.0     p,K+,Lambda(1405)[Lambda,dilepton[e+,e-]]
-  511   0.0     0.0     p,K+,Lambda(1405)[decay:Sigma13850:]
-  512   0.0     0.0     p,K+,Lambda(1405)[Sigma0,pi0]
+  510   0.0     0.0     p,Lambda(1405)[Lambda,dilepton[e+,e-]],K+
+  511   0.0     0.0     p,Lambda(1405)[decay:Sigma13850:],K+
+  512   0.0     0.0     p,Lambda(1405)[Sigma0,pi0],K+
 
-  520   0.0     0.0     p,K+,Lambda(1520)[Lambda,dilepton[e+,e-]]
-  521   0.0     0.0     p,K+,Lambda(1520)[decay:Sigma13850:Lambda1405:]
-  522   0.0     0.0     p,K+,Lambda(1520)[Lambda,pi+,pi-]
-  523   0.0     0.0     p,K+,Lambda(1520)[Lambda,pi0,pi0]
+  520   0.0     0.0     p,Lambda(1520)[Lambda,dilepton[e+,e-]],K+
+  521   0.0     0.0     p,Lambda(1520)[decay:Sigma13850:Lambda1405:],K+
+  522   0.0     0.0     p,Lambda(1520)[Lambda,pi+,pi-],K+
+  523   0.0     0.0     p,Lambda(1520)[Lambda,pi0,pi0],K+
 
-  530   0.0     0.0     p,K+,Xi(1530)0[Lambda,dilepton[e+,e-]]
-  531   0.0     0.0     p,K+,Xi(1530)0[decay]
+  530   0.0     0.0     p,Xi(1530)0[Lambda,dilepton[e+,e-]],K+
+  531   0.0     0.0     p,Xi(1530)0[decay],K+
 
-  540   0.0     0.0     p,K+,Xi(1530)-[Lambda,dilepton[e+,e-]]
-  541   0.0     0.0     p,K+,Xi(1530)-[decay]
+  540   0.0     0.0     p,Xi(1530)-[Lambda,dilepton[e+,e-]],K+
+  541   0.0     0.0     p,Xi(1530)-[decay],K+
 
 # Double strange channels
   600   0.0     0.0     Xi-,K+,K+,p
@@ -290,16 +296,21 @@
 
 # mesons
   900   0.0     0.0     p,p,pi0[g,g]
+  901   0.0     0.0     p,p,pi0[dilepton[e+,e-],g]
 
   910   0.0     0.0     p,p,omega[pi0,pi+,pi-]
   911   0.0     0.0     p,p,omega[pi0,dilepton[e+,e-]]
   912   0.0     0.0     p,p,omega[pi0[g,g],dilepton[e+,e-]]
+  913   0.0     0.0     p,p,omega[pi0,pi+,pi-],pi+,pi-
+  914   0.0     0.0     p,p,omega[e+,e-]
 
   920   0.0     0.0     p,p,eta[g,g]
   921   0.0     0.0     p,p,eta[pi0,pi+,pi-]
   922   0.0     0.0     p,p,eta[pi0[g,g],pi+,pi-]
   923   0.0     0.0     p,p,eta[pi0[dilepton[e+,e-],g],pi+,pi-]
   924   0.0     0.0     p,p,eta[e+,e-,pi+,pi-]
+  925   0.0     0.0     p,p,eta[pi0,pi+,pi-],pi+,pi-
+  926   0.0     0.0     p,p,eta[dilepton[e+,e-],g]
 
   929   0.0     0.0     p,p,eta[pi+,pi-,X17[decay]]
 
@@ -310,7 +321,8 @@
   941   0.0     0.0     p,p,phi[decay]
   942   0.0     0.0     p,p,phi[K+,K-]
 
-  950   0.0     0.0     p,p,f1[decays]
-  951   0.0     0.0     p,p,f1[eta[pi+,pi-,pi0],pi+,pi-]
-  952   0.0     0.0     p,p,f1[decays:X17:]
-
+  950   0.0     0.0     p,p,f1[eta[pi+,pi-,pi0],pi+,pi-]
+  951   0.0     0.0     p,p,f1[pi+,pi-,pi+,pi-]
+  952   0.0     0.0     p,p,f1[decays]
+  953   0.0     0.0     p,p,f1[decays:X17:]
+  960   0.0     0.0     p,p,eta1295[eta[pi0,pi+,pi-]pi+,pi-]
