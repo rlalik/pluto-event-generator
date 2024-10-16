@@ -3,6 +3,7 @@
 #include <PParticle.h>
 #include <plugins/PMesonsPlugin.h>
 #include <plugins/PStrangenessPlugin.h>
+#include <PResonanceDalitz.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -457,6 +458,32 @@ auto load_database(const char* dbfile) -> std::map<int, channel_data>
     return channels;
 }
 
+auto init_custom_strangeness() -> void {
+    if (makeStaticData()->AddParticle(-1, "Lambda1385", 1.385) > 0) {
+        makeStaticData()->AddAlias("Lambda1385", "Lambda(1385)");
+
+        makeStaticData()->SetParticleTotalWidth("Lambda1385", 0.05);
+        makeStaticData()->SetParticleBaryon("Lambda1385", 1);
+        makeStaticData()->SetParticleSpin("Lambda1385", 1);
+        makeStaticData()->SetParticleParity("Lambda1385", -1);
+
+        makeStaticData()->AddDecay("Lambda(1385) --> Sigma+ + pi-",   "Lambda1385", "Sigma+,pi-", 1. / 3);
+        makeStaticData()->AddDecay("Lambda(1385) --> Sigma- + pi+",   "Lambda1385", "Sigma-,pi+", 1. / 3);
+        makeStaticData()->AddDecay("Lambda(1385) --> Sigma0 + pi0",   "Lambda1385", "Sigma0,pi0", 1. / 3);
+
+        makeStaticData()->AddDecay("Lambda(1385) --> Lambda + gamma", "Lambda1385", "Lambda,g",   0.0085);
+        makeStaticData()->AddDecay("Lambda(1385) --> Sigma(1385)0 + gamma", "Lambda1385", "Sigma13850,g",   0.0085);
+
+        makeStaticData()->AddDecay("Lambda(1385) --> Lambda + dilepton", "Lambda1385", "Lambda,dilepton", 0.0085 / 137.);
+
+        PResonanceDalitz * dalitz = new PResonanceDalitz("Lambda1385_dalitz@Lambda1385_to_Lambda_dilepton", "dgdm from Zetenyi/Wolf", -1);
+        dalitz->setGm(0.719);
+        makeDistributionManager()->Add(dalitz);
+    } else {
+        Error("ExecCommand", "PIDs blocked, plugin disabled");
+    }
+}
+
 auto init_nstar() -> void
 {
 #ifdef NSTARS
@@ -543,6 +570,7 @@ auto run_channel(int channel_id, std::string channel_string, int events, int see
         listParticle("Sigma13850");
         listParticle("Sigma1385+");
         listParticle("Sigma1385-");
+        listParticle("Lambda1385");
         listParticle("Lambda1405");
         listParticle("Lambda1520");
         listParticle("Xi15300");
@@ -756,8 +784,10 @@ int main(int argc, char** argv)
 
     //PStrangenessPlugin::EnableExperimentalDecays(true);
     makeDistributionManager()->Exec("strangeness:init");
-    PMesonsPlugin::EnableExperimentalDecays(kTRUE);
+    // PMesonsPlugin::EnableExperimentalDecays(kTRUE);
     makeDistributionManager()->Exec("mesons:init");
+
+    init_custom_strangeness();
 
     if (par_query)
     {
