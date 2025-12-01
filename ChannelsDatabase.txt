@@ -228,7 +228,8 @@
   501   0.0     0.0     p,Sigma(1385)0[decay],K+
 
   505   0.0     0.0     p,Sigma(1385)+[Lambda,pi+],K0S
-  506   0.0     0.0     p,Sigma(1385)-[Lambda,pi-],pi+,K+
+  506   0.0     0.0     p,Sigma(1385)+[Lambda,pi+],K0S,pi0
+  507   0.0     0.0     p,Sigma(1385)+[Lambda,pi+],K+,pi-
 
   510   0.0     0.0     p,Lambda(1405)[Lambda,dilepton[e+,e-]],K+
   511   0.0     0.0     p,Lambda(1405)[decay:Sigma13850:],K+
@@ -237,13 +238,26 @@
   520   0.0     0.0     p,Lambda(1520)[Lambda,dilepton[e+,e-]],K+
   521   0.0     0.0     p,Lambda(1520)[decay:Sigma13850:Lambda1405:],K+
   522   0.0     0.0     p,Lambda(1520)[Lambda,pi+,pi-],K+
-  523   0.0     0.0     p,Lambda(1520)[Lambda,pi0,pi0],K+
+  523   0.0     0.0     p,Lambda(1520)[decay:Sigma13850:Lambda1405:],K+,pi0
+  524   0.0     0.0     p,Lambda(1520)[Lambda,pi+,pi-],K+,pi0
+  525   0.0     0.0     p,Lambda(1520)[decay:Sigma13850:Lambda1405:],K0S,pi+
+  526   0.0     0.0     p,Lambda(1520)[Lambda,pi+,pi-],K0S,pi+
+  529   0.0     0.0     p,Lambda(1520)[Lambda,pi0,pi0],K+
 
   530   0.0     0.0     p,Xi(1530)0[Lambda,dilepton[e+,e-]],K+
   531   0.0     0.0     p,Xi(1530)0[decay],K+
 
   540   0.0     0.0     p,Xi(1530)-[Lambda,dilepton[e+,e-]],K+
   541   0.0     0.0     p,Xi(1530)-[decay],K+
+
+  550   0.0     0.0     n,Sigma(1385)+[Lambda,pi+],K+
+  551   0.0     0.0     n,Sigma(1385)+[Lambda,pi+],K+,pi0
+  552   0.0     0.0     n,Sigma(1385)+[Lambda,pi+],K0S,pi+
+
+  560   0.0     0.0     p,Sigma(1385)-[Lambda,pi-],K+,pi+
+
+  570   0.0     0.0     n,Lambda(1520)[decay:Sigma13850:Lambda1405:],K+,pi+
+  571   0.0     0.0     n,Lambda(1520)[Lambda,pi+,pi-],K+,pi+
 
 # Double strange channels
   600   0.0     0.0     Xi-,K+,K+,p
